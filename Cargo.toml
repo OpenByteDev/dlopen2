@@ -5,9 +5,7 @@ authors = [
     "Szymon Wieloch <szymon.wieloch@gmail.com>",
     "Ahmed Masud <ahmed.masud@saf.ai>"]
 description = "Library for opening and operating on dynamic link libraries (also known as shared objects or shared libraries)."
-keywords = [
-    #common functions
-    "dlopen", "dll", "so", "dylib", "shared"]
+keywords = [ "dlopen", "dll", "so", "dylib", "shared"]
 license = "MIT"
 repository = "https://github.com/ahmed-masud/rust-dlopen"
 edition = "2018"
@@ -23,7 +21,7 @@ version = ">= 0.1.4"
 winapi = {version = ">= 0.3.7", features=["winnt", "minwindef", "winerror", "libloaderapi", "errhandlingapi", "dbghelp", "processthreadsapi", "basetsd"]}
 
 [target.'cfg(unix)'.dependencies]
-libc = "0.2.62"
+libc = ">= 0.2"
 
 [dev-dependencies]
 const-cstr = "0.3.0"
@@ -32,11 +30,9 @@ regex = ">= 1.2.1"
 serde = { version=">= 1.0.99", features = ["derive"] }
 serde_json = ">=1.0.30,  <=1.0.40"
 
-
 [dev-dependencies.example_dylib]
 path = "rust-example-dylib"
 version = "0.1.0"
-
 
 [badges.travis-ci]
 repository = "ahmed-masud/rust-dlopen"

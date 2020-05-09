@@ -1,7 +1,7 @@
-use std::error::Error as ErrorTrait;
-use std::fmt::{Display, Formatter, Result as FmtResult};
 use std::convert::From;
+use std::error::Error as ErrorTrait;
 use std::ffi::NulError;
+use std::fmt::{Display, Formatter, Result as FmtResult};
 use std::io::Error as IoError;
 
 ///This is a library-specific error that is returned by all calls to all APIs.
@@ -17,7 +17,7 @@ pub enum Error {
     ///Value of the symbol was null.
     NullSymbol,
     ///Address could not be matched to a dynamic link library
-    AddrNotMatchingDll(IoError)
+    AddrNotMatchingDll(IoError),
 }
 
 impl ErrorTrait for Error {
@@ -28,7 +28,7 @@ impl ErrorTrait for Error {
             &OpeningLibraryError(_) => "Could not open library",
             &SymbolGettingError(_) => "Could not obtain symbol from the library",
             &NullSymbol => "The symbol is NULL",
-            &AddrNotMatchingDll(_) => "Address does not match any dynamic link library"
+            &AddrNotMatchingDll(_) => "Address does not match any dynamic link library",
         }
     }
 
@@ -36,9 +36,10 @@ impl ErrorTrait for Error {
         use self::Error::*;
         match self {
             &NullCharacter(ref val) => Some(val),
-            &OpeningLibraryError(_) | &SymbolGettingError(_) | &NullSymbol | &AddrNotMatchingDll(_)=> {
-                None
-            }
+            &OpeningLibraryError(_)
+            | &SymbolGettingError(_)
+            | &NullSymbol
+            | &AddrNotMatchingDll(_) => None,
         }
     }
 }
@@ -56,7 +57,7 @@ impl Display for Error {
                 f.write_str(": ")?;
                 msg.fmt(f)
             }
-            &NullSymbol | &NullCharacter(_) | &AddrNotMatchingDll(_)=> Ok(()),
+            &NullSymbol | &NullCharacter(_) | &AddrNotMatchingDll(_) => Ok(()),
         }
     }
 }
