@@ -1,3 +1,5 @@
+use crate::raw;
+
 use super::super::raw::Library;
 use super::super::Error;
 use super::api::WrapperApi;
@@ -73,6 +75,15 @@ where
         let lib = Library::open_self()?;
         let api = T::load(&lib)?;
         Ok(Self { lib, api })
+    }
+
+    /**
+    Returns the raw OS handle for the opened library.
+
+    This is `HMODULE` on Windows and `*mut c_void` on Unix systems. Don't use unless absolutely necessary.
+    */
+    pub unsafe fn into_raw(&self) -> raw::Handle {
+        self.lib.into_raw()
     }
 }
 

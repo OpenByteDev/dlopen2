@@ -1,3 +1,5 @@
+use crate::raw;
+
 use super::super::raw::Library as RawLib;
 use super::ptr_or_null::PtrOrNull;
 use super::ptr_or_null_mut::PtrOrNullMut;
@@ -142,6 +144,15 @@ impl Library {
     ///Equivalent of the `reference_mut()` method but takes `CStr` as a argument.
     pub unsafe fn reference_mut_cstr<T>(&self, name: &CStr) -> Result<&mut T, Error> {
         self.lib.symbol_cstr(name)
+    }
+
+    /**
+    Returns the raw OS handle for the opened library.
+
+    This is `HMODULE` on Windows and `*mut c_void` on Unix systems. Don't use unless absolutely necessary.
+    */
+    pub unsafe fn into_raw(&self) -> raw::Handle {
+        self.lib.into_raw()
     }
 }
 
