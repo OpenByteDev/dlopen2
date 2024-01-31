@@ -5,13 +5,16 @@ use std::ffi::{CStr, CString, OsStr};
 #[cfg(unix)]
 use super::unix::{
     addr_info_cleanup, addr_info_init, addr_info_obtain, close_lib, get_sym, open_lib, open_self,
-    Handle,
 };
 #[cfg(windows)]
 use super::windows::{
     addr_info_cleanup, addr_info_init, addr_info_obtain, close_lib, get_sym, open_lib, open_self,
-    Handle,
 };
+
+#[cfg(unix)]
+pub use super::unix::Handle;
+#[cfg(windows)]
+pub use super::windows::Handle;
 
 use std::mem::{size_of, transmute_copy};
 
@@ -37,6 +40,7 @@ pub struct Library {
 }
 
 impl Library {
+
     /**
     Open a dynamic library.
 
@@ -82,7 +86,7 @@ impl Library {
     }
 
     /**
-    Obtain symbol from opened library.
+    Obtains a symbol from the opened library.
 
     **Note:** the `T` template type needs to have a size of a pointer.
     Because Rust does not support static casts at the moment, the size of the type
@@ -118,6 +122,7 @@ impl Library {
         let cname = CString::new(name)?;
         self.symbol_cstr(cname.as_ref())
     }
+
     ///Equivalent of the `symbol` method but takes `CStr` as a argument.
     pub unsafe fn symbol_cstr<T>(&self, name: &CStr) -> Result<T, Error> {
         //TODO: convert it to some kind of static assertion (not yet supported in Rust)
@@ -134,6 +139,15 @@ impl Library {
         } else {
             Ok(transmute_copy(&raw))
         }
+    }
+
+    /**
+    Returns the raw OS handle for the opened library.
+
+    This is `HMODULE` on Windows and `*mut c_void` on Unix systems. Don't use unless absolutely necessary.
+    */
+    pub unsafe fn into_raw(&self) -> Handle {
+        return self.handle;
     }
 }
 
