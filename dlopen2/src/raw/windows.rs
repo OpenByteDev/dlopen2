@@ -154,7 +154,7 @@ pub unsafe fn open_self() -> Result<Handle, Error> {
 }
 
 #[inline]
-pub unsafe fn open_lib(name: &OsStr) -> Result<Handle, Error> {
+pub unsafe fn open_lib(name: &OsStr, _flags: Option<i32>) -> Result<Handle, Error> {
     let wide_name: Vec<u16> = name.encode_wide().chain(Some(0)).collect();
     let _guard = match ErrorModeGuard::new() {
         Ok(val) => val,
