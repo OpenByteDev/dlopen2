@@ -1,3 +1,5 @@
+use crate::raw;
+
 use super::super::Error;
 use super::api::SymBorApi;
 use super::Library;
@@ -72,6 +74,15 @@ where
         let static_ref: &'static Library = transmute(&lib);
         let api = T::load(static_ref)?;
         Ok(Self { api, lib })
+    }
+
+    /**
+    Returns the raw OS handle for the opened library.
+
+    This is `HMODULE` on Windows and `*mut c_void` on Unix systems. Don't use unless absolutely necessary.
+    */
+    pub unsafe fn into_raw(&self) -> raw::Handle {
+        self.lib.into_raw()
     }
 }
 
