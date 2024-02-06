@@ -95,7 +95,7 @@ where
 
     /// Load all symbols (including optional if it is possible) from the
     /// program itself.
-    /// 
+    ///
     /// This allows a shared library to load symbols of the program it was
     /// loaded into.
     pub unsafe fn load_self() -> Result<OptionalContainer<Api, Optional>, Error> {

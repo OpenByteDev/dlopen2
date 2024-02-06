@@ -57,7 +57,7 @@ impl Library {
     }
 
     /// Open the program itself as library.
-    /// 
+    ///
     /// This allows a shared library to load symbols of the program it was
     /// loaded into.
     pub fn open_self() -> Result<Library, Error> {
@@ -67,7 +67,7 @@ impl Library {
     }
 
     /// Obtain a symbol from library.
-    /// 
+    ///
     /// This method is the most general one and allows obtaining basically everything assuming
     /// that the value of the given symbol cannot be null (use `ptr_or_null()` for this case).
     /// However the `reference()` and `reference_mut()` methods return a native reference and they
@@ -83,7 +83,7 @@ impl Library {
     }
 
     /// Obtain a const pointer from library.
-    /// 
+    ///
     /// **Note:** This method is only recommended for data
     /// that can't be accessed as a reference and that can have a null pointer value
     /// (so not in 99% of cases).
@@ -105,7 +105,7 @@ impl Library {
     }
 
     /// Obtain a mutable pointer from library.
-    /// 
+    ///
     /// **Note:** This method is only recommended for data
     /// that can't be accessed as a reference and that can have a null pointer value
     /// (so not in 99% of cases).

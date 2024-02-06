@@ -4,7 +4,7 @@ use std::marker::PhantomData;
 use std::ops::Deref;
 
 /// Safe wrapper around const pointer.
-/// 
+///
 /// It is recommended only for obtaining pointers that can have null value.
 #[derive(Debug, Clone, Copy)]
 pub struct PtrOrNull<'lib, T: 'lib> {

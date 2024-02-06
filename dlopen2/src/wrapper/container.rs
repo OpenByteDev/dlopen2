@@ -68,7 +68,7 @@ where
         Ok(Self { lib, api })
     }
     /// Load all symbols from the program itself.
-    /// 
+    ///
     /// This allows a shared library to load symbols of the program it was
     /// loaded into.
     pub unsafe fn load_self() -> Result<Container<T>, Error> {
@@ -78,7 +78,7 @@ where
     }
 
     /// Returns the raw OS handle for the opened library.
-    /// 
+    ///
     /// This is `HMODULE` on Windows and `*mut c_void` on Unix systems. Don't use unless absolutely necessary.
     pub unsafe fn into_raw(&self) -> raw::Handle {
         self.lib.into_raw()

@@ -4,7 +4,7 @@ use std::marker::PhantomData;
 use std::ops::Deref;
 
 /// Safe wrapper around mutable pointer.
-/// 
+///
 /// It is recommended only for obtaining pointers that can have null value.
 #[derive(Debug, Clone, Copy)]
 pub struct PtrOrNullMut<'lib, T: 'lib> {

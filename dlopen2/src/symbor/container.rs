@@ -63,7 +63,7 @@ where
         Ok(Self { api, lib })
     }
     /// Load all symbols from the program itself.
-    /// 
+    ///
     /// This allows a shared library to load symbols of the program it was
     /// loaded into.
     pub unsafe fn load_self() -> Result<Self, Error> {

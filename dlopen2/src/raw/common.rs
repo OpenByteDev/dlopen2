@@ -210,7 +210,7 @@ pub struct AddressInfo {
     /// Base address of the library that is the source of this symbol.
     pub dll_base_addr: *const (),
     /// Information about the overlapping symbol from the dynamic load library.
-    /// 
+    ///
     /// The information is optional since the given address may not overlap with any symbol.
     pub overlapping_symbol: Option<OverlappingSymbol>,
 }
