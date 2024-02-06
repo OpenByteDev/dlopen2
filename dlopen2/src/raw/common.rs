@@ -180,7 +180,7 @@ impl Library {
     This is `HMODULE` on Windows and `*mut c_void` on Unix systems. Don't use unless absolutely necessary.
     */
     pub unsafe fn into_raw(&self) -> Handle {
-        return self.handle;
+        self.handle
     }
 }
 
