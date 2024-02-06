@@ -65,7 +65,41 @@ impl Library {
         S: AsRef<OsStr>,
     {
         Ok(Self {
-            handle: unsafe { open_lib(name.as_ref()) }?,
+            handle: unsafe { open_lib(name.as_ref(), None) }?,
+        })
+    }
+
+    /**
+    Open a dynamic library with flags
+
+    **Note:** different platforms search for libraries in different directories.
+    Therefore this function cannot be 100% platform independent.
+    However it seems that all platforms support the full path and
+    searching in default os directories if you provide only the file name.
+    Please refer to your operating system guide for precise information about the directories
+    where the operating system searches for dynamic link libraries.
+
+    Currently, flags only impact loading of libraries on unix-like platforms.
+
+    # Example
+
+    ```no_run
+    use dlopen2::raw::Library;
+
+    fn main() {
+        //use full path
+        let lib = Library::open_with_flags("/lib/i386-linux-gnu/libm.so.6", None).unwrap();
+        //use only file name
+        let lib = Library::open("libm.so.6").unwrap();
+    }
+    ```
+     */
+    pub fn open_with_flags<S>(name: S, flags: Option<i32>) -> Result<Library, Error>
+        where
+            S: AsRef<OsStr>,
+    {
+        Ok(Self {
+            handle: unsafe { open_lib(name.as_ref(), flags) }?,
         })
     }
 

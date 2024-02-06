@@ -74,6 +74,16 @@ where
         let api = T::load(&lib)?;
         Ok(Self { lib, api })
     }
+
+    ///Same as load(), except specify flags used by libc::dlopen
+    pub unsafe fn load_with_flags<S>(name: S, flags: Option<i32>) -> Result<Container<T>, Error>
+    where
+        S: AsRef<OsStr>,
+    {
+        let lib = Library::open_with_flags(name, flags)?;
+        let api = T::load(&lib)?;
+        Ok(Self { lib, api })
+    }
 }
 
 impl<T> Deref for Container<T>

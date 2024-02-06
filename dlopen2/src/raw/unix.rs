@@ -64,7 +64,7 @@ pub unsafe fn open_self() -> Result<Handle, Error> {
 }
 
 #[inline]
-pub unsafe fn open_lib(name: &OsStr) -> Result<Handle, Error> {
+pub unsafe fn open_lib(name: &OsStr, flags: Option<i32>) -> Result<Handle, Error> {
     let mut v: Vec<u8> = Vec::new();
     //as_bytes i a unix-specific extension
     let cstr = if !name.is_empty() && name.as_bytes()[name.len() - 1] == 0 {
@@ -77,7 +77,7 @@ pub unsafe fn open_lib(name: &OsStr) -> Result<Handle, Error> {
         CStr::from_bytes_with_nul_unchecked(v.as_slice())
     };
     let _lock = lock_dlerror_mutex();
-    let handle = dlopen(cstr.as_ptr(), DEFAULT_FLAGS);
+    let handle = dlopen(cstr.as_ptr(), flags.unwrap_or(DEFAULT_FLAGS));
     if handle.is_null() {
         Err(Error::OpeningLibraryError(IoError::new(
             ErrorKind::Other,

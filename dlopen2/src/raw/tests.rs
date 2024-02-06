@@ -24,7 +24,7 @@ const_cstr! {NOT_EXISTING_SYM = "notexisting";}
 #[test]
 fn load_get_close() {
     unsafe {
-        let handle = open_lib(EXISTING_LIB.as_ref()).expect("Could not open library");
+        let handle = open_lib(EXISTING_LIB.as_ref(), None).expect("Could not open library");
         let sym = get_sym(handle, EXISTING_SYM.as_cstr()).expect("Could not get symbol");
         assert!(!sym.is_null());
         assert!(close_lib(handle).is_null());
@@ -34,7 +34,7 @@ fn load_get_close() {
 #[test]
 fn open_err() {
     unsafe {
-        match open_lib(NOT_EXISTING_LIB.as_ref()) {
+        match open_lib(NOT_EXISTING_LIB.as_ref(), None) {
             Ok(_) => panic!("Library should not get opened"),
             Err(err) => match err {
                 Error::OpeningLibraryError(_) => (),
@@ -47,7 +47,7 @@ fn open_err() {
 #[test]
 fn get_err() {
     unsafe {
-        let handle = open_lib(EXISTING_LIB.as_ref()).expect("Could not open library");
+        let handle = open_lib(EXISTING_LIB.as_ref(), None).expect("Could not open library");
         match get_sym(handle, NOT_EXISTING_SYM.as_cstr()) {
             Ok(_) => panic!("Should not get the symbol"),
             Err(err) => match err {

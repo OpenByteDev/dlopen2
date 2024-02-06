@@ -78,6 +78,18 @@ where
         Ok(Self { lib, api, optional })
     }
 
+    ///Opens the library using provided file name or path and flags, and loads all symbols (including optional
+    ///if it is possible).
+    pub unsafe fn load_with_flags<S>(name: S, flags: Option<i32>) -> Result<OptionalContainer<Api, Optional>, Error>
+        where
+            S: AsRef<OsStr>,
+    {
+        let lib = Library::open_with_flags(name, flags)?;
+        let api = Api::load(&lib)?;
+        let optional = Optional::load(&lib).ok();
+        Ok(Self { lib, api, optional })
+    }
+
     ///Load all symbols (including optional if it is possible) from the
     ///program itself.
     ///
