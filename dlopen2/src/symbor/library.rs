@@ -46,7 +46,7 @@ pub struct Library {
 }
 
 impl Library {
-    ///Open dynamic link library using provided file name or path.
+    /// Open dynamic link library using provided file name or path.
     pub fn open<S>(name: S) -> Result<Library, Error>
     where
         S: AsRef<OsStr>,
@@ -57,7 +57,7 @@ impl Library {
     }
 
     /// Open the program itself as library.
-    ///
+    /// 
     /// This allows a shared library to load symbols of the program it was
     /// loaded into.
     pub fn open_self() -> Result<Library, Error> {
@@ -67,7 +67,7 @@ impl Library {
     }
 
     /// Obtain a symbol from library.
-    ///
+    /// 
     /// This method is the most general one and allows obtaining basically everything assuming
     /// that the value of the given symbol cannot be null (use `ptr_or_null()` for this case).
     /// However the `reference()` and `reference_mut()` methods return a native reference and they
@@ -77,13 +77,13 @@ impl Library {
         Ok(Symbol::new(self.lib.symbol(name)?))
     }
 
-    ///Equivalent of the `symbol()` method but takes `CStr` as a argument.
+    /// Equivalent of the `symbol()` method but takes `CStr` as a argument.
     pub unsafe fn symbol_cstr<T>(&self, name: &CStr) -> Result<Symbol<T>, Error> {
         Ok(Symbol::new(self.lib.symbol_cstr(name)?))
     }
 
-    ///Obtain a const pointer from library.
-    ///
+    /// Obtain a const pointer from library.
+    /// 
     /// **Note:** This method is only recommended for data
     /// that can't be accessed as a reference and that can have a null pointer value
     /// (so not in 99% of cases).
@@ -92,7 +92,7 @@ impl Library {
         self.ptr_or_null_cstr(cname.as_ref())
     }
 
-    ///Equivalent of the `pointer()` method but takes `CStr` as a argument.
+    /// Equivalent of the `pointer()` method but takes `CStr` as a argument.
     pub unsafe fn ptr_or_null_cstr<T>(&self, name: &CStr) -> Result<PtrOrNull<T>, Error> {
         let raw_ptr = match self.lib.symbol_cstr(name) {
             Ok(val) => val,
@@ -104,8 +104,8 @@ impl Library {
         Ok(PtrOrNull::new(raw_ptr))
     }
 
-    ///Obtain a mutable pointer from library.
-    ///
+    /// Obtain a mutable pointer from library.
+    /// 
     /// **Note:** This method is only recommended for data
     /// that can't be accessed as a reference and that can have a null pointer value
     /// (so not in 99% of cases).
@@ -114,7 +114,7 @@ impl Library {
         self.ptr_or_null_mut_cstr(cname.as_ref())
     }
 
-    ///Equivalent of the `pointer_mut()` method but takes `CStr` as a argument.
+    /// Equivalent of the `pointer_mut()` method but takes `CStr` as a argument.
     pub unsafe fn ptr_or_null_mut_cstr<T>(&self, name: &CStr) -> Result<PtrOrNullMut<T>, Error> {
         let raw_ptr = match self.lib.symbol_cstr(name) {
             Ok(val) => val,
@@ -126,22 +126,22 @@ impl Library {
         Ok(PtrOrNullMut::new(raw_ptr))
     }
 
-    ///Obtain const reference to statically allocated data in the library.
+    /// Obtain const reference to statically allocated data in the library.
     pub unsafe fn reference<T>(&self, name: &str) -> Result<&T, Error> {
         self.lib.symbol(name)
     }
 
-    ///Equivalent of the `reference()` method but takes `CStr` as a argument.
+    /// Equivalent of the `reference()` method but takes `CStr` as a argument.
     pub unsafe fn reference_cstr<T>(&self, name: &CStr) -> Result<&T, Error> {
         self.lib.symbol_cstr(name)
     }
 
-    ///Obtain mutable reference to statically allocated data in the library.
+    /// Obtain mutable reference to statically allocated data in the library.
     pub unsafe fn reference_mut<T>(&self, name: &str) -> Result<&mut T, Error> {
         self.lib.symbol(name)
     }
 
-    ///Equivalent of the `reference_mut()` method but takes `CStr` as a argument.
+    /// Equivalent of the `reference_mut()` method but takes `CStr` as a argument.
     pub unsafe fn reference_mut_cstr<T>(&self, name: &CStr) -> Result<&mut T, Error> {
         self.lib.symbol_cstr(name)
     }

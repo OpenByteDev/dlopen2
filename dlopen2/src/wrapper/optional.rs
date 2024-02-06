@@ -66,8 +66,8 @@ where
     Api: WrapperApi,
     Optional: WrapperApi,
 {
-    ///Opens the library using provided file name or path and loads all symbols (including optional
-    ///if it is possible).
+    /// Opens the library using provided file name or path and loads all symbols (including optional
+    /// if it is possible).
     pub unsafe fn load<S>(name: S) -> Result<OptionalContainer<Api, Optional>, Error>
     where
         S: AsRef<OsStr>,
@@ -78,11 +78,14 @@ where
         Ok(Self { lib, api, optional })
     }
 
-    ///Opens the library using provided file name or path and flags, and loads all symbols (including optional
-    ///if it is possible).
-    pub unsafe fn load_with_flags<S>(name: S, flags: Option<i32>) -> Result<OptionalContainer<Api, Optional>, Error>
-        where
-            S: AsRef<OsStr>,
+    /// Opens the library using provided file name or path and flags, and loads all symbols (including optional
+    /// if it is possible).
+    pub unsafe fn load_with_flags<S>(
+        name: S,
+        flags: Option<i32>,
+    ) -> Result<OptionalContainer<Api, Optional>, Error>
+    where
+        S: AsRef<OsStr>,
     {
         let lib = Library::open_with_flags(name, flags)?;
         let api = Api::load(&lib)?;
@@ -90,9 +93,9 @@ where
         Ok(Self { lib, api, optional })
     }
 
-    ///Load all symbols (including optional if it is possible) from the
-    ///program itself.
-    ///
+    /// Load all symbols (including optional if it is possible) from the
+    /// program itself.
+    /// 
     /// This allows a shared library to load symbols of the program it was
     /// loaded into.
     pub unsafe fn load_self() -> Result<OptionalContainer<Api, Optional>, Error> {
@@ -102,12 +105,12 @@ where
         Ok(Self { lib, api, optional })
     }
 
-    ///Gives access to the optional API - constant version.
+    /// Gives access to the optional API - constant version.
     pub fn optional(&self) -> &Option<Optional> {
         &self.optional
     }
 
-    ///Gives access to the optional API - constant version.
+    /// Gives access to the optional API - constant version.
     pub fn optional_mut(&mut self) -> &mut Option<Optional> {
         &mut self.optional
     }

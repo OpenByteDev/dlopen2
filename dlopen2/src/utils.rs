@@ -14,31 +14,31 @@ Apple	lib*.dylib
 Unix	lib*.so
 */
 
-///This is a platform-specific file prefix.
-///
+/// This is a platform-specific file prefix.
+/// 
 /// In Unix-based systems the convention is to start the file name with "lib".
 /// Windows does not have such a convention.
 #[cfg(unix)]
 pub const PLATFORM_FILE_PREFIX: &str = "lib";
-///This is a platform-specific file prefix.
-///
+/// This is a platform-specific file prefix.
+/// 
 /// In Unix-based systems the convention is to start the file name with "lib".
 /// Windows does not have such a convention.
 #[cfg(windows)]
 pub const PLATFORM_FILE_PREFIX: &str = "";
 
-///Dynamic link library file extension specific to the platform.
+/// Dynamic link library file extension specific to the platform.
 #[cfg(any(target_os = "macos", target_os = "ios"))]
 pub const PLATFORM_FILE_EXTENSION: &str = "dylib";
-///Dynamic link library file extension specific to the platform.
+/// Dynamic link library file extension specific to the platform.
 #[cfg(all(unix, not(any(target_os = "macos", target_os = "ios"))))]
 pub const PLATFORM_FILE_EXTENSION: &str = "so";
-///Dynamic link library file extension specific to the platform.
+/// Dynamic link library file extension specific to the platform.
 #[cfg(windows)]
 pub const PLATFORM_FILE_EXTENSION: &str = "dll";
 
-///Crates a platform-specific file name from provided core file name.
-///
+/// Crates a platform-specific file name from provided core file name.
+/// 
 /// For example on Ubuntu it converts "example" argument into "libexample.so".
 pub fn platform_file_name<S>(core_name: S) -> OsString
 where

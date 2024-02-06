@@ -4,19 +4,19 @@ use std::ffi::NulError;
 use std::fmt::{Display, Formatter, Result as FmtResult};
 use std::io::Error as IoError;
 
-///This is a library-specific error that is returned by all calls to all APIs.
+/// This is a library-specific error that is returned by all calls to all APIs.
 #[derive(Debug)]
 pub enum Error {
-    ///Provided string could not be coverted into `std::ffi::CString` because it contained null
+    /// Provided string could not be coverted into `std::ffi::CString` because it contained null
     /// character.
     NullCharacter(NulError),
-    ///The library could not be opened.
+    /// The library could not be opened.
     OpeningLibraryError(IoError),
-    ///The symbol could not be obtained.
+    /// The symbol could not be obtained.
     SymbolGettingError(IoError),
-    ///Value of the symbol was null.
+    /// Value of the symbol was null.
     NullSymbol,
-    ///Address could not be matched to a dynamic link library
+    /// Address could not be matched to a dynamic link library
     AddrNotMatchingDll(IoError),
 }
 

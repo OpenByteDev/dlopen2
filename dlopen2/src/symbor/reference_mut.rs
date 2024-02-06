@@ -3,8 +3,8 @@ use super::from_raw::{FromRawResult, RawResult};
 
 use std::ops::{Deref, DerefMut};
 
-///Safe wrapper around mutable reference.
-///
+/// Safe wrapper around mutable reference.
+/// 
 /// This type is intended to be used only inside structures implementing `SymBorApi` trait.
 /// In other cases you can as well use normal Rust reference.
 #[derive(Debug)]

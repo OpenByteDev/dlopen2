@@ -49,7 +49,7 @@ impl<T> Container<T>
 where
     T: SymBorApi<'static>,
 {
-    ///Open dynamic link library and load symbols.
+    /// Open dynamic link library and load symbols.
     pub unsafe fn load<S>(name: S) -> Result<Self, Error>
     where
         S: AsRef<OsStr>,
@@ -62,8 +62,8 @@ where
         let api = T::load(static_ref)?;
         Ok(Self { api, lib })
     }
-    ///Load all symbols from the program itself.
-    ///
+    /// Load all symbols from the program itself.
+    /// 
     /// This allows a shared library to load symbols of the program it was
     /// loaded into.
     pub unsafe fn load_self() -> Result<Self, Error> {

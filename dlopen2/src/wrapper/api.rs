@@ -79,6 +79,6 @@ pub trait WrapperApi
 where
     Self: Sized,
 {
-    ///Load symbols from provided library.
+    /// Load symbols from provided library.
     unsafe fn load(lib: &Library) -> Result<Self, Error>;
 }

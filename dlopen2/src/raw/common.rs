@@ -156,7 +156,7 @@ impl Library {
         self.symbol_cstr(cname.as_ref())
     }
 
-    ///Equivalent of the `symbol` method but takes `CStr` as a argument.
+    /// Equivalent of the `symbol` method but takes `CStr` as a argument.
     pub unsafe fn symbol_cstr<T>(&self, name: &CStr) -> Result<T, Error> {
         //TODO: convert it to some kind of static assertion (not yet supported in Rust)
         //this comparison should be calculated by compiler at compilation time - zero cost
@@ -193,10 +193,10 @@ impl Drop for Library {
 unsafe impl Sync for Library {}
 unsafe impl Send for Library {}
 
-///Container for information about overlapping symbol from dynamic load library.
+/// Container for information about overlapping symbol from dynamic load library.
 #[derive(Debug)]
 pub struct OverlappingSymbol {
-    ///Overlapping symbol name
+    /// Overlapping symbol name
     pub name: String,
     /// Overlapping symbol address
     pub addr: *const (),
@@ -210,12 +210,12 @@ pub struct AddressInfo {
     /// Base address of the library that is the source of this symbol.
     pub dll_base_addr: *const (),
     /// Information about the overlapping symbol from the dynamic load library.
-    ///
+    /// 
     /// The information is optional since the given address may not overlap with any symbol.
     pub overlapping_symbol: Option<OverlappingSymbol>,
 }
 
-///Obtains information about an address previously loaded from a dynamic load library.
+/// Obtains information about an address previously loaded from a dynamic load library.
 pub struct AddressInfoObtainer {}
 
 impl Default for AddressInfoObtainer {
