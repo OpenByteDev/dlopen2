@@ -40,7 +40,6 @@ pub struct Library {
 }
 
 impl Library {
-
     /**
     Open a dynamic library.
 
@@ -99,8 +98,8 @@ impl Library {
     ```
      */
     pub fn open_with_flags<S>(name: S, flags: Option<i32>) -> Result<Library, Error>
-        where
-            S: AsRef<OsStr>,
+    where
+        S: AsRef<OsStr>,
     {
         Ok(Self {
             handle: unsafe { open_lib(name.as_ref(), flags) }?,
