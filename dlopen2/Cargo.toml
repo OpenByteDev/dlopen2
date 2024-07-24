@@ -9,6 +9,7 @@ description = "Library for opening and operating on dynamic link libraries (also
 keywords = [
     "dlopen", "dll", "so", "dylib", "shared"]
 license = "MIT"
+license-file = "../LICENSE"
 repository = "https://github.com/OpenByteDev/dlopen2"
 edition = "2021"
 readme = "../README.md"

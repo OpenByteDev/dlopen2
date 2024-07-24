@@ -5,6 +5,7 @@ authors = ["Szymon Wieloch <szymon.wieloch@gmail.com>",
            "OpenByte <development.openbyte@gmail.com>"]
 description = "Derive macros for the dlopen2 crate."
 license = "MIT"
+license-file = "../LICENSE"
 repository = "https://github.com/OpenByteDev/dlopen2"
 edition = "2021"
 
