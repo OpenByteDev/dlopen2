@@ -53,7 +53,7 @@ pub fn example_lib_path() -> PathBuf {
             None => lib_path = Some(new_path),
             Some(old_path) => {
                 let new_meta = std::fs::metadata(&new_path).unwrap();
-                let old_meta = std::fs::metadata(&old_path).unwrap();
+                let old_meta = std::fs::metadata(old_path).unwrap();
                 if new_meta.modified().unwrap() > old_meta.modified().unwrap() {
                     lib_path = Some(new_path);
                 }
