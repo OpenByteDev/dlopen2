@@ -19,11 +19,11 @@ dangling symbols is prevented.
 **Note:**: It is recommended that you use certain methods in certain situations:
 
 * `symbol()` - for obtaining functions and pointers (but only if you can't use references
-    instead of pointers and you do not accept null value of a pointer).
+  instead of pointers and you do not accept null value of a pointer).
 * `reference()` and `reference_mut()` - for obtaining access to
-    statically allocated objects - either constant or mutable.
+  statically allocated objects - either constant or mutable.
 * `ptr_or_null()` and `ptr_or_null_mut()` - for obtaining pointers if you accept null values of
-    pointers (in 99% of cases you should rather use previously mentioned methods).
+  pointers (in 99% of cases you should rather use previously mentioned methods).
 
 #Example
 

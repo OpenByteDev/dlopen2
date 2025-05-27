@@ -51,7 +51,7 @@ fn main() {
 * Has a low-level API that provides full flexibility of using libraries.
 * Has two high-level APIs that protect against dangling symbols - each in its own way.
 * High level APIs support automatic loading of symbols into structures. You only need to define a
-    structure that represents an API. The rest happens automatically and requires only minimal amount of code.
+  structure that represents an API. The rest happens automatically and requires only minimal amount of code.
 * Automatic loading of symbols helps you to follow the DRY paradigm.
 
 ## Comparison with other libraries
@@ -102,19 +102,19 @@ Special thanks to [Simonas Kazlauskas](https://github.com/nagisa) whose [libload
 # Comparison of APIs:
 
 * [**raw**](./raw/index.html) - a low-level API. It is mainly intended to give you full flexibility
-    if you decide to create you own custom solution for handling dynamic link libraries.
-    For typical operations you probably should use one of high-level APIs.
+  if you decide to create you own custom solution for handling dynamic link libraries.
+  For typical operations you probably should use one of high-level APIs.
 
 * [**symbor**](./symbor/index.html) - a high-level API. It prevents dangling symbols by creating
-    zero cost structural wrappers around symbols obtained from the library. These wrappers use
-    Rust borrowing mechanism to make sure that the library will never get released before obtained
-    symbols.
+  zero cost structural wrappers around symbols obtained from the library. These wrappers use
+  Rust borrowing mechanism to make sure that the library will never get released before obtained
+  symbols.
 
 * [**wrapper**](./wrapper/index.html) - a high-level API. It prevents dangling symbols by creating
-    zero cost functional wrappers around symbols obtained from the library. These wrappers prevent
-    accidental copying of raw symbols from library API. Dangling symbols are prevented by keeping
-    library and its API in one structure - this makes sure that symbols and library are released
-    together.
+  zero cost functional wrappers around symbols obtained from the library. These wrappers prevent
+  accidental copying of raw symbols from library API. Dangling symbols are prevented by keeping
+  library and its API in one structure - this makes sure that symbols and library are released
+  together.
 
 Additionally both high-level APIs provide a way to automatically load symbols into a structure using
 Rust reflection mechanism. Decision which API should be used is a matter of taste - please check

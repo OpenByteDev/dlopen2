@@ -47,19 +47,19 @@ fn main(){
 Please notice several supported features:
 
 * By default `SymBorApi` uses the field name to obtain a symbol from the library.
-    You can override the symbol name using the `dlopen2_name` attribute.
+  You can override the symbol name using the `dlopen2_name` attribute.
 * All kind of objects from the `symbor` module implement the Deref or DerefMut trait.
-    This means that you can use them as if you would use primitive types that they wrap.
+  This means that you can use them as if you would use primitive types that they wrap.
 * You can obtain optional symbols. This is very useful when you are dealing with
-    different versions of libraries and the new versions support more functions.
-    If it is not possible to obtain the given symbol, the option is set to `None',
-    otherwise it contains the obtained symbol.
+  different versions of libraries and the new versions support more functions.
+  If it is not possible to obtain the given symbol, the option is set to `None',
+  otherwise it contains the obtained symbol.
 * Both `Symbol` and `Ref` or `RefMut` can be used to obtain references to statically
-    allocated objects. But `Ref` and `RefMut` are just easier to use - they require
-    less dereferences to access the final value.
-    Actually they behave like a normal reference does, it just that they implement the
-    `FromRawResult` interface that allows them to be used inside structures that implement
-    the `SymBorApi` trait.
+  allocated objects. But `Ref` and `RefMut` are just easier to use - they require
+  less dereferences to access the final value.
+  Actually they behave like a normal reference does, it just that they implement the
+  `FromRawResult` interface that allows them to be used inside structures that implement
+  the `SymBorApi` trait.
 
 */
 pub trait SymBorApi<'a>

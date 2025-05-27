@@ -11,7 +11,7 @@ This trait is intended to be used with `#[derive(WrapperApi)]` macro defined in 
 * All fields need to be private.
 * Only functions, references and pointers are allowed.
 * You can't define a type using `type Fun =fn();` and use it in the structure. This is a limitation
-    of the Rust reflection mechanism. Only raw functions, references and pointers are allowed.
+  of the Rust reflection mechanism. Only raw functions, references and pointers are allowed.
 * All arguments of functions need to be named.
 
 
@@ -23,11 +23,11 @@ references are just simple accessors in the form of `<field_name>(&self) -> &Fie
 Wrappers are not generated only for:
 
 * Pointers - there is no safe way of preventing dangling symbols if a user has a direct access to
-    pointers. The recommended approach here is to either use references instead of pointers or
-    to manually create safe wrappers. For example C `const char *` can be manually converted into
-    `& std::ffi::CStr`.
+  pointers. The recommended approach here is to either use references instead of pointers or
+  to manually create safe wrappers. For example C `const char *` can be manually converted into
+  `& std::ffi::CStr`.
 * Variadic functions. Rust doesn't have any mechanism that allows creating safe wrappers around
-    them. You need to handle them manually.
+  them. You need to handle them manually.
 
 #Example
 

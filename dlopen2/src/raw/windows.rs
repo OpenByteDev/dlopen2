@@ -4,7 +4,7 @@ use super::super::err::Error;
 use super::common::{AddressInfo, OverlappingSymbol};
 use once_cell::sync::{Lazy, OnceCell};
 use std::ffi::{CStr, OsStr, OsString};
-use std::io::{Error as IoError, ErrorKind};
+use std::io::Error as IoError;
 use std::mem::size_of;
 use std::os::windows::ffi::{OsStrExt, OsStringExt};
 use std::ptr::null_mut;
@@ -124,8 +124,7 @@ impl Drop for ErrorModeGuard {
 unsafe fn get_win_error() -> IoError {
     let error = GetLastError();
     if error == 0 {
-        IoError::new(
-            ErrorKind::Other,
+        IoError::other(
             "Could not obtain information about the error",
         )
     } else {

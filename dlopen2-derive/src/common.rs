@@ -23,7 +23,7 @@ pub fn find_str_attr_val(field: &Field, attr_name: &str) -> Option<String> {
                             Expr::Lit(ExprLit {
                                 lit: Lit::Str(val), ..
                             }) => Some(val.value()),
-                            _ => panic!("{} attribute must be a string", attr_name),
+                            _ => panic!("{attr_name} attribute must be a string"),
                         };
                     }
                 }
@@ -66,14 +66,14 @@ pub fn has_marker_attr(field: &Field, attr_name: &str) -> bool {
 pub fn get_fields<'a>(ast: &'a DeriveInput, trait_name: &str) -> &'a FieldsNamed {
     let vd = match ast.data {
         Data::Enum(_) | Data::Union(_) => {
-            panic!("{} can be only implemented for structures", trait_name)
+            panic!("{trait_name} can be only implemented for structures")
         }
         Data::Struct(ref val) => val,
     };
     match vd.fields {
         Fields::Named(ref f) => f,
         Fields::Unnamed(_) | Fields::Unit => {
-            panic!("{} can be only implemented for structures", trait_name)
+            panic!("{trait_name} can be only implemented for structures")
         }
     }
 }
