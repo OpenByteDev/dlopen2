@@ -115,7 +115,10 @@ impl Library {
     }
 
     /// Equivalent of the `pointer_mut()` method but takes `CStr` as a argument.
-    pub unsafe fn ptr_or_null_mut_cstr<T>(&mut self, name: &CStr) -> Result<PtrOrNullMut<T>, Error> {
+    pub unsafe fn ptr_or_null_mut_cstr<T>(
+        &mut self,
+        name: &CStr,
+    ) -> Result<PtrOrNullMut<T>, Error> {
         let raw_ptr = match self.lib.symbol_cstr(name) {
             Ok(val) => val,
             Err(err) => match err {
