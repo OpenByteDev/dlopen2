@@ -51,9 +51,7 @@ fn field_to_tokens(field: &Field) -> proc_macro2::TokenStream {
     match skip_groups(&field.ty) {
         Type::BareFn(_) | Type::Reference(_) => {
             if allow_null {
-                panic!(
-                    "Only pointers can have the '{ALLOW_NULL}' attribute assigned"
-                );
+                panic!("Only pointers can have the '{ALLOW_NULL}' attribute assigned");
             }
             normal_field(field)
         }
