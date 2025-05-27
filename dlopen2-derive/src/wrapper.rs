@@ -48,11 +48,12 @@ pub fn impl_wrapper_api(ast: &DeriveInput) -> proc_macro2::TokenStream {
 
 fn field_to_tokens(field: &Field) -> proc_macro2::TokenStream {
     let allow_null = has_marker_attr(field, ALLOW_NULL);
-    match field.ty {
+    match skip_groups(&field.ty) {
         Type::BareFn(_) | Type::Reference(_) => {
             if allow_null {
                 panic!(
-                    "Only pointers can have the '{ALLOW_NULL}' attribute assigned"
+                    "Only pointers can have the '{}' attribute assigned",
+                    ALLOW_NULL
                 );
             }
             normal_field(field)
@@ -83,7 +84,6 @@ fn field_to_tokens(field: &Field) -> proc_macro2::TokenStream {
             }
         }
         _ => {
-            // dbg!();
             panic!("Only bare functions, references and pointers are allowed in structures implementing WrapperApi trait")
         }
     }
@@ -139,6 +139,13 @@ fn optional_field(field: &Field) -> proc_macro2::TokenStream {
     tokens
 }
 
+fn skip_groups(ty: &Type) -> &Type {
+    match ty {
+        Type::Group(ref group) => skip_groups(&group.elem),
+        _ => ty,
+    }
+}
+
 fn field_to_wrapper(field: &Field) -> Option<proc_macro2::TokenStream> {
     let ident = field
         .ident
@@ -146,7 +153,7 @@ fn field_to_wrapper(field: &Field) -> Option<proc_macro2::TokenStream> {
         .expect("Fields must have idents (tuple structs are not supported)");
     let attrs = get_non_marker_attrs(field);
 
-    match field.ty {
+    match skip_groups(&field.ty) {
         Type::BareFn(ref fun) => {
             if fun.variadic.is_some() {
                 None
@@ -173,7 +180,7 @@ fn field_to_wrapper(field: &Field) -> Option<proc_macro2::TokenStream> {
             let ty = &ref_ty.elem;
             let mut_acc = match ref_ty.mutability {
                 Some(_token) => {
-                    let mut_ident = &format!("{ident}_mut");
+                    let mut_ident = &format!("{}_mut", ident);
                     let method_name = syn::Ident::new(mut_ident, ident.span());
                     Some(quote! {
                         #(#attrs)*
@@ -209,63 +216,66 @@ fn field_to_wrapper(field: &Field) -> Option<proc_macro2::TokenStream> {
             let args = &segment.arguments;
             match args {
                 syn::PathArguments::AngleBracketed(args) => match args.args.first().unwrap() {
-                    GenericArgument::Type(Type::BareFn(fun)) => {
-                        if fun.variadic.is_some() {
-                            None
-                        } else {
-                            let output = &fun.output;
-                            let output = match output {
-                                syn::ReturnType::Default => quote!(-> Option<()>),
-                                syn::ReturnType::Type(_, ty) => quote!( -> Option<#ty>),
-                            };
-                            let unsafety = &fun.unsafety;
-                            let arg_iter = fun
-                                .inputs
-                                .iter()
-                                .map(|a| fun_arg_to_tokens(a, &ident.to_string()));
-                            let arg_names = fun.inputs.iter().map(|a| match a.name {
-                                ::std::option::Option::Some((ref arg_name, _)) => arg_name,
-                                ::std::option::Option::None => unreachable!(),
-                            });
-                            let has_ident = quote::format_ident!("has_{}", ident);
-                            Some(quote! {
-                                #(#attrs)*
-                                pub #unsafety fn #ident (&self, #(#arg_iter),* ) #output {
-                                    self.#ident.map(|f| (f)(#(#arg_names),*))
-                                }
-                                #(#attrs)*
-                                pub fn #has_ident (&self) -> bool {
-                                    self.#ident.is_some()
-                                }
-                            })
-                        }
-                    }
-                    GenericArgument::Type(Type::Reference(ref_ty)) => {
-                        let ty = &ref_ty.elem;
-                        match ref_ty.mutability {
-                            Some(_token) => {
-                                let mut_ident = &format!("{ident}");
-                                let method_name = syn::Ident::new(mut_ident, ident.span());
+                    GenericArgument::Type(ty) => match skip_groups(ty) {
+                        Type::BareFn(fun) => {
+                            if fun.variadic.is_some() {
+                                None
+                            } else {
+                                let output = &fun.output;
+                                let output = match output {
+                                    syn::ReturnType::Default => quote!(-> Option<()>),
+                                    syn::ReturnType::Type(_, ty) => quote!( -> Option<#ty>),
+                                };
+                                let unsafety = &fun.unsafety;
+                                let arg_iter = fun
+                                    .inputs
+                                    .iter()
+                                    .map(|a| fun_arg_to_tokens(a, &ident.to_string()));
+                                let arg_names = fun.inputs.iter().map(|a| match a.name {
+                                    ::std::option::Option::Some((ref arg_name, _)) => arg_name,
+                                    ::std::option::Option::None => unreachable!(),
+                                });
+                                let has_ident = quote::format_ident!("has_{}", ident);
                                 Some(quote! {
                                     #(#attrs)*
-                                    pub fn #method_name (&mut self) -> ::core::option::Option<&mut #ty> {
-                                        if let Some(&mut ref mut val) = self.#ident {
-                                            Some(val)
-                                        } else {
-                                            None
-                                        }
+                                    pub #unsafety fn #ident (&self, #(#arg_iter),* ) #output {
+                                        self.#ident.map(|f| (f)(#(#arg_names),*))
+                                    }
+                                    #(#attrs)*
+                                    pub fn #has_ident (&self) -> bool {
+                                        self.#ident.is_some()
                                     }
                                 })
                             }
-                            None => Some(quote! {
-                                #(#attrs)*
-                                pub fn #ident (&self) -> ::core::option::Option<& #ty> {
-                                    self.#ident
-                                }
-                            }),
                         }
-                    }
-                    _ => panic!("Unsupported field type"),
+                        Type::Reference(ref_ty) => {
+                            let ty = &ref_ty.elem;
+                            match ref_ty.mutability {
+                                Some(_token) => {
+                                    let mut_ident = &format!("{}", ident);
+                                    let method_name = syn::Ident::new(mut_ident, ident.span());
+                                    Some(quote! {
+                                        #(#attrs)*
+                                        pub fn #method_name (&mut self) -> ::core::option::Option<&mut #ty> {
+                                            if let Some(&mut ref mut val) = self.#ident {
+                                                Some(val)
+                                            } else {
+                                                None
+                                            }
+                                        }
+                                    })
+                                }
+                                None => Some(quote! {
+                                    #(#attrs)*
+                                    pub fn #ident (&self) -> ::core::option::Option<& #ty> {
+                                        self.#ident
+                                    }
+                                }),
+                            }
+                        }
+                        _ => panic!("Unsupported field type"),
+                    },
+                    _ => panic!("Unknown optional type!"),
                 },
                 _ => panic!("Unknown optional type!"),
             }
@@ -277,7 +287,7 @@ fn field_to_wrapper(field: &Field) -> Option<proc_macro2::TokenStream> {
 fn fun_arg_to_tokens(arg: &BareFnArg, function_name: &str) -> proc_macro2::TokenStream {
     let arg_name = match arg.name {
         Some(ref val) => &val.0,
-        None => panic!("Function {function_name} has an unnamed argument."),
+        None => panic!("Function {} has an unnamed argument.", function_name),
     };
     let ty = &arg.ty;
     quote! {
