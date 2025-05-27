@@ -7,7 +7,7 @@ use std::os::raw::{c_char, c_int};
 
 fn main() {
     let lib_path = example_lib_path();
-    let lib = Library::open(lib_path).expect("Could not open library");
+    let mut lib = Library::open(lib_path).expect("Could not open library");
 
     let rust_fun_print_something =
         unsafe { lib.symbol_cstr::<fn()>(c"rust_fun_print_something") }.unwrap();
