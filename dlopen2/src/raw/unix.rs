@@ -40,8 +40,7 @@ pub unsafe fn get_sym(handle: Handle, name: &CStr) -> Result<*mut (), Error> {
     if symbol.is_null() {
         let msg = dlerror();
         if !msg.is_null() {
-            return Err(Error::SymbolGettingError(IoError::new(
-                ErrorKind::Other,
+            return Err(Error::SymbolGettingError(IoError::other(
                 CStr::from_ptr(msg).to_string_lossy().to_string(),
             )));
         }
@@ -54,8 +53,7 @@ pub unsafe fn open_self() -> Result<Handle, Error> {
     let _lock = lock_dlerror_mutex();
     let handle = dlopen(null(), DEFAULT_FLAGS);
     if handle.is_null() {
-        Err(Error::OpeningLibraryError(IoError::new(
-            ErrorKind::Other,
+        Err(Error::OpeningLibraryError(IoError::other(
             CStr::from_ptr(dlerror()).to_string_lossy().to_string(),
         )))
     } else {
@@ -79,8 +77,7 @@ pub unsafe fn open_lib(name: &OsStr, flags: Option<i32>) -> Result<Handle, Error
     let _lock = lock_dlerror_mutex();
     let handle = dlopen(cstr.as_ptr(), flags.unwrap_or(DEFAULT_FLAGS));
     if handle.is_null() {
-        Err(Error::OpeningLibraryError(IoError::new(
-            ErrorKind::Other,
+        Err(Error::OpeningLibraryError(IoError::other(
             CStr::from_ptr(dlerror()).to_string_lossy().to_string(),
         )))
     } else {
