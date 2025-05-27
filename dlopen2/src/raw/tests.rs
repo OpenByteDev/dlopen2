@@ -1,9 +1,9 @@
 use super::super::err::Error;
-use std::ffi::CStr;
 #[cfg(unix)]
 use super::unix::{close_lib, get_sym, open_lib};
 #[cfg(windows)]
 use super::windows::{close_lib, get_sym, open_lib};
+use std::ffi::CStr;
 
 #[cfg(windows)]
 const EXISTING_LIB: &str = "kernel32.dll";
@@ -16,7 +16,7 @@ const NOT_EXISTING_LIB: &str = "notexisting.ext";
 const EXISTING_SYM: &CStr = c"GetLastError";
 #[cfg(unix)]
 const EXISTING_SYM: &CStr = c"cos";
-const NOT_EXISTING_SYM : &CStr= c"notexisting";
+const NOT_EXISTING_SYM: &CStr = c"notexisting";
 
 //This is an example of opening and closing a library
 //It's going to work only on Windows but this is what it is supposed to do

@@ -124,9 +124,7 @@ impl Drop for ErrorModeGuard {
 unsafe fn get_win_error() -> IoError {
     let error = GetLastError();
     if error == 0 {
-        IoError::other(
-            "Could not obtain information about the error",
-        )
+        IoError::other("Could not obtain information about the error")
     } else {
         IoError::from_raw_os_error(error as i32)
     }

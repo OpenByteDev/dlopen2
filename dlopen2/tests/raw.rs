@@ -12,8 +12,7 @@ fn open_play_close_raw() {
     let rust_fun_print_something: fn() =
         unsafe { lib.symbol_cstr(c"rust_fun_print_something") }.unwrap();
     rust_fun_print_something(); //should not crash
-    let rust_fun_add_one: fn(i32) -> i32 =
-        unsafe { lib.symbol_cstr(c"rust_fun_add_one") }.unwrap();
+    let rust_fun_add_one: fn(i32) -> i32 = unsafe { lib.symbol_cstr(c"rust_fun_add_one") }.unwrap();
     assert_eq!(rust_fun_add_one(5), 6);
     let c_fun_print_something_else: unsafe extern "C" fn() =
         unsafe { lib.symbol_cstr(c"c_fun_print_something_else") }.unwrap();
@@ -23,29 +22,25 @@ fn open_play_close_raw() {
     assert_eq!(unsafe { c_fun_add_two(2) }, 4);
     let rust_i32: &i32 = unsafe { lib.symbol_cstr(c"rust_i32") }.unwrap();
     assert_eq!(43, *rust_i32);
-    let rust_i32_mut: &mut i32 =
-        unsafe { lib.symbol_cstr(c"rust_i32_mut") }.unwrap();
+    let rust_i32_mut: &mut i32 = unsafe { lib.symbol_cstr(c"rust_i32_mut") }.unwrap();
     assert_eq!(42, *rust_i32_mut);
     *rust_i32_mut = 55; //should not crash
                         //for a change use pointer to obtain its value
-    let rust_i32_ptr: *const i32 =
-        unsafe { lib.symbol_cstr(c"rust_i32_mut") }.unwrap();
+    let rust_i32_ptr: *const i32 = unsafe { lib.symbol_cstr(c"rust_i32_mut") }.unwrap();
     assert_eq!(55, unsafe { *rust_i32_ptr });
     //the same with C
     let c_int: &c_int = unsafe { lib.symbol_cstr(c"c_int") }.unwrap();
     assert_eq!(45, *c_int);
     //now static c struct
 
-    let c_struct: &SomeData =
-        unsafe { lib.symbol_cstr(c"c_struct") }.unwrap();
+    let c_struct: &SomeData = unsafe { lib.symbol_cstr(c"c_struct") }.unwrap();
     assert_eq!(1, c_struct.first);
     assert_eq!(2, c_struct.second);
     //let's play with strings
 
     let rust_str: &&str = unsafe { lib.symbol_cstr(c"rust_str") }.unwrap();
     assert_eq!("Hello!", *rust_str);
-    let c_const_char_ptr: *const c_char =
-        unsafe { lib.symbol_cstr(c"c_const_char_ptr") }.unwrap();
+    let c_const_char_ptr: *const c_char = unsafe { lib.symbol_cstr(c"c_const_char_ptr") }.unwrap();
     let converted = unsafe { CStr::from_ptr(c_const_char_ptr) }
         .to_str()
         .unwrap();

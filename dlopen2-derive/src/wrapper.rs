@@ -52,8 +52,7 @@ fn field_to_tokens(field: &Field) -> proc_macro2::TokenStream {
         Type::BareFn(_) | Type::Reference(_) => {
             if allow_null {
                 panic!(
-                    "Only pointers can have the '{}' attribute assigned",
-                    ALLOW_NULL
+                    "Only pointers can have the '{ALLOW_NULL}' attribute assigned"
                 );
             }
             normal_field(field)
@@ -180,7 +179,7 @@ fn field_to_wrapper(field: &Field) -> Option<proc_macro2::TokenStream> {
             let ty = &ref_ty.elem;
             let mut_acc = match ref_ty.mutability {
                 Some(_token) => {
-                    let mut_ident = &format!("{}_mut", ident);
+                    let mut_ident = &format!("{ident}_mut");
                     let method_name = syn::Ident::new(mut_ident, ident.span());
                     Some(quote! {
                         #(#attrs)*
@@ -252,7 +251,7 @@ fn field_to_wrapper(field: &Field) -> Option<proc_macro2::TokenStream> {
                             let ty = &ref_ty.elem;
                             match ref_ty.mutability {
                                 Some(_token) => {
-                                    let mut_ident = &format!("{}", ident);
+                                    let mut_ident = &format!("{ident}");
                                     let method_name = syn::Ident::new(mut_ident, ident.span());
                                     Some(quote! {
                                         #(#attrs)*
@@ -287,7 +286,7 @@ fn field_to_wrapper(field: &Field) -> Option<proc_macro2::TokenStream> {
 fn fun_arg_to_tokens(arg: &BareFnArg, function_name: &str) -> proc_macro2::TokenStream {
     let arg_name = match arg.name {
         Some(ref val) => &val.0,
-        None => panic!("Function {} has an unnamed argument.", function_name),
+        None => panic!("Function {function_name} has an unnamed argument."),
     };
     let ty = &arg.ty;
     quote! {
