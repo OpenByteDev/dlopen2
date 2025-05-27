@@ -1,6 +1,6 @@
 [package]
 name = "dlopen2"
-version = "0.7.0"
+version = "0.8.0"
 authors = [
     "Szymon Wieloch <szymon.wieloch@gmail.com>",
     "Ahmed Masud <ahmed.masud@saf.ai>",
