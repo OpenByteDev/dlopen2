@@ -123,7 +123,7 @@ At the moment none seems to have any reasonable advantage over the other.
 
 */
 
-#![allow(clippy::missing_safety_doc, clippy::needless_doctest_main)]
+#![allow(clippy::missing_safety_doc, clippy::needless_doctest_main, unused_unsafe)]
 #![cfg_attr(feature = "doc_cfg", feature(doc_cfg))]
 
 mod err;
