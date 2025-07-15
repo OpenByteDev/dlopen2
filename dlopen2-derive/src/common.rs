@@ -17,15 +17,15 @@ pub fn find_str_attr_val(field: &Field, attr_name: &str) -> Option<String> {
     for attr in field.attrs.iter() {
         match attr.meta {
             Meta::NameValue(ref meta) => {
-                if let Some(ident) = meta.path.get_ident() {
-                    if ident == attr_name {
-                        return match &meta.value {
-                            Expr::Lit(ExprLit {
-                                lit: Lit::Str(val), ..
-                            }) => Some(val.value()),
-                            _ => panic!("{attr_name} attribute must be a string"),
-                        };
-                    }
+                if let Some(ident) = meta.path.get_ident()
+                    && ident == attr_name
+                {
+                    return match &meta.value {
+                        Expr::Lit(ExprLit {
+                            lit: Lit::Str(val), ..
+                        }) => Some(val.value()),
+                        _ => panic!("{attr_name} attribute must be a string"),
+                    };
                 }
             }
             _ => continue,
@@ -39,10 +39,10 @@ pub fn get_non_marker_attrs(field: &Field) -> Vec<&Attribute> {
         .attrs
         .iter()
         .filter(|attr| {
-            if let Some(ident) = attr.path().get_ident() {
-                if ident.to_string().starts_with("dlopen2_") {
-                    return false;
-                }
+            if let Some(ident) = attr.path().get_ident()
+                && ident.to_string().starts_with("dlopen2_")
+            {
+                return false;
             }
             true
         })

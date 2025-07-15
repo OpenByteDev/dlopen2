@@ -57,7 +57,7 @@ where
 }
 
 pub const unsafe fn maybe_uninit_slice_assume_init_ref<T>(slice: &[MaybeUninit<T>]) -> &[T] {
-    &*(slice as *const [MaybeUninit<T>] as *const [T])
+    unsafe { &*(slice as *const [MaybeUninit<T>] as *const [T]) }
 }
 
 pub fn maybe_uninit_uninit_array<T, const LEN: usize>() -> [MaybeUninit<T>; LEN] {

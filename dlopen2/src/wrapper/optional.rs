@@ -72,10 +72,12 @@ where
     where
         S: AsRef<OsStr>,
     {
-        let lib = Library::open(name)?;
-        let api = Api::load(&lib)?;
-        let optional = Optional::load(&lib).ok();
-        Ok(Self { lib, api, optional })
+        unsafe {
+            let lib = Library::open(name)?;
+            let api = Api::load(&lib)?;
+            let optional = Optional::load(&lib).ok();
+            Ok(Self { lib, api, optional })
+        }
     }
 
     /// Opens the library using provided file name or path and flags, and loads all symbols (including optional
@@ -87,10 +89,12 @@ where
     where
         S: AsRef<OsStr>,
     {
-        let lib = Library::open_with_flags(name, flags)?;
-        let api = Api::load(&lib)?;
-        let optional = Optional::load(&lib).ok();
-        Ok(Self { lib, api, optional })
+        unsafe {
+            let lib = Library::open_with_flags(name, flags)?;
+            let api = Api::load(&lib)?;
+            let optional = Optional::load(&lib).ok();
+            Ok(Self { lib, api, optional })
+        }
     }
 
     /// Load all symbols (including optional if it is possible) from the
@@ -99,10 +103,12 @@ where
     /// This allows a shared library to load symbols of the program it was
     /// loaded into.
     pub unsafe fn load_self() -> Result<OptionalContainer<Api, Optional>, Error> {
-        let lib = Library::open_self()?;
-        let api = Api::load(&lib)?;
-        let optional = Optional::load(&lib).ok();
-        Ok(Self { lib, api, optional })
+        unsafe {
+            let lib = Library::open_self()?;
+            let api = Api::load(&lib)?;
+            let optional = Optional::load(&lib).ok();
+            Ok(Self { lib, api, optional })
+        }
     }
 
     /// Gives access to the optional API - constant version.

@@ -54,26 +54,30 @@ where
     where
         S: AsRef<OsStr>,
     {
-        let lib = Library::open(name)?;
-        //this is cheating of course
-        //but it is safe because Library and api is placed in the same structure
-        //and therefore it is released at the same time.
-        let static_ref: &'static Library = transmute(&lib);
-        let api = T::load(static_ref)?;
-        Ok(Self { api, lib })
+        unsafe {
+            let lib = Library::open(name)?;
+            //this is cheating of course
+            //but it is safe because Library and api is placed in the same structure
+            //and therefore it is released at the same time.
+            let static_ref: &'static Library = transmute(&lib);
+            let api = T::load(static_ref)?;
+            Ok(Self { api, lib })
+        }
     }
     /// Load all symbols from the program itself.
     ///
     /// This allows a shared library to load symbols of the program it was
     /// loaded into.
     pub unsafe fn load_self() -> Result<Self, Error> {
-        let lib = Library::open_self()?;
-        //this is cheating of course
-        //but it is safe because Library and api is placed in the same structure
-        //and therefore it is released at the same time.
-        let static_ref: &'static Library = transmute(&lib);
-        let api = T::load(static_ref)?;
-        Ok(Self { api, lib })
+        unsafe {
+            let lib = Library::open_self()?;
+            //this is cheating of course
+            //but it is safe because Library and api is placed in the same structure
+            //and therefore it is released at the same time.
+            let static_ref: &'static Library = transmute(&lib);
+            let api = T::load(static_ref)?;
+            Ok(Self { api, lib })
+        }
     }
 
     /**
@@ -82,7 +86,7 @@ where
     This is `HMODULE` on Windows and `*mut c_void` on Unix systems. Don't use unless absolutely necessary.
     */
     pub unsafe fn into_raw(&self) -> raw::Handle {
-        self.lib.into_raw()
+        unsafe { self.lib.into_raw() }
     }
 }
 

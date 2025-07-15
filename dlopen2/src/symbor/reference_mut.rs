@@ -20,17 +20,19 @@ impl<'lib, T> RefMut<'lib, T> {
 
 impl<'lib, T> FromRawResult for RefMut<'lib, T> {
     unsafe fn from_raw_result(raw_result: RawResult) -> Result<Self, Error> {
-        match raw_result {
-            Ok(ptr) => {
-                if ptr.is_null() {
-                    Err(Error::NullSymbol)
-                } else {
-                    Ok(RefMut {
-                        reference: &mut *(*ptr as *mut T),
-                    })
+        unsafe {
+            match raw_result {
+                Ok(ptr) => {
+                    if ptr.is_null() {
+                        Err(Error::NullSymbol)
+                    } else {
+                        Ok(RefMut {
+                            reference: &mut *(*ptr as *mut T),
+                        })
+                    }
                 }
+                Err(err) => Err(err),
             }
-            Err(err) => Err(err),
         }
     }
 }

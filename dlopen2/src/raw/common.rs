@@ -152,25 +152,29 @@ impl Library {
     ```
     */
     pub unsafe fn symbol<T>(&self, name: &str) -> Result<T, Error> {
-        let cname = CString::new(name)?;
-        self.symbol_cstr(cname.as_ref())
+        unsafe {
+            let cname = CString::new(name)?;
+            self.symbol_cstr(cname.as_ref())
+        }
     }
 
     /// Equivalent of the `symbol` method but takes `CStr` as a argument.
     pub unsafe fn symbol_cstr<T>(&self, name: &CStr) -> Result<T, Error> {
-        //TODO: convert it to some kind of static assertion (not yet supported in Rust)
-        //this comparison should be calculated by compiler at compilation time - zero cost
-        if size_of::<T>() != size_of::<*mut ()>() {
-            panic!(
-                "The type passed to dlopen2::Library::symbol() function has a different size than a \
+        unsafe {
+            //TODO: convert it to some kind of static assertion (not yet supported in Rust)
+            //this comparison should be calculated by compiler at compilation time - zero cost
+            if size_of::<T>() != size_of::<*mut ()>() {
+                panic!(
+                    "The type passed to dlopen2::Library::symbol() function has a different size than a \
                  pointer - cannot transmute"
-            );
-        }
-        let raw = get_sym(self.handle, name)?;
-        if raw.is_null() {
-            Err(Error::NullSymbol)
-        } else {
-            Ok(transmute_copy(&raw))
+                );
+            }
+            let raw = get_sym(self.handle, name)?;
+            if raw.is_null() {
+                Err(Error::NullSymbol)
+            } else {
+                Ok(transmute_copy(&raw))
+            }
         }
     }
 
@@ -255,7 +259,7 @@ impl AddressInfoObtainer {
     ```
     */
     pub unsafe fn obtain(&self, addr: *const ()) -> Result<AddressInfo, Error> {
-        addr_info_obtain(addr)
+        unsafe { addr_info_obtain(addr) }
     }
 }
 

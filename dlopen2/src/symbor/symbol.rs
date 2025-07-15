@@ -26,19 +26,21 @@ impl<'lib, T> Symbol<'lib, T> {
 
 impl<'lib, T> FromRawResult for Symbol<'lib, T> {
     unsafe fn from_raw_result(raw_result: RawResult) -> Result<Self, Error> {
-        match raw_result {
-            Ok(ptr) => {
-                if ptr.is_null() {
-                    Err(Error::NullSymbol)
-                } else {
-                    let raw: *const () = *ptr;
-                    Ok(Symbol {
-                        symbol: transmute_copy(&raw),
-                        pd: PhantomData,
-                    })
+        unsafe {
+            match raw_result {
+                Ok(ptr) => {
+                    if ptr.is_null() {
+                        Err(Error::NullSymbol)
+                    } else {
+                        let raw: *const () = *ptr;
+                        Ok(Symbol {
+                            symbol: transmute_copy(&raw),
+                            pd: PhantomData,
+                        })
+                    }
                 }
+                Err(err) => Err(err),
             }
-            Err(err) => Err(err),
         }
     }
 }

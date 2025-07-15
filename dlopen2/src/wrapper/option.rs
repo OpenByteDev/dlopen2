@@ -7,9 +7,11 @@ where
     T: WrapperApi,
 {
     unsafe fn load(lib: &Library) -> Result<Self, Error> {
-        match T::load(lib) {
-            Ok(val) => Ok(Some(val)),
-            Err(_) => Ok(None),
+        unsafe {
+            match T::load(lib) {
+                Ok(val) => Ok(Some(val)),
+                Err(_) => Ok(None),
+            }
         }
     }
 }

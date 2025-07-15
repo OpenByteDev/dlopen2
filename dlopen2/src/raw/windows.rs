@@ -122,125 +122,138 @@ impl Drop for ErrorModeGuard {
 }
 
 unsafe fn get_win_error() -> IoError {
-    let error = GetLastError();
-    if error == 0 {
-        IoError::other("Could not obtain information about the error")
-    } else {
-        IoError::from_raw_os_error(error as i32)
+    unsafe {
+        let error = GetLastError();
+        if error == 0 {
+            IoError::other("Could not obtain information about the error")
+        } else {
+            IoError::from_raw_os_error(error as i32)
+        }
     }
 }
 
 #[inline]
 pub unsafe fn get_sym(handle: Handle, name: &CStr) -> Result<*mut (), Error> {
-    let symbol = GetProcAddress(handle, name.as_ptr());
-    if symbol.is_null() {
-        Err(Error::SymbolGettingError(get_win_error()))
-    } else {
-        Ok(symbol as *mut ())
+    unsafe {
+        let symbol = GetProcAddress(handle, name.as_ptr());
+        if symbol.is_null() {
+            Err(Error::SymbolGettingError(get_win_error()))
+        } else {
+            Ok(symbol as *mut ())
+        }
     }
 }
 
 #[inline]
 pub unsafe fn open_self() -> Result<Handle, Error> {
-    let mut handle: Handle = null_mut();
-    if GetModuleHandleExW(0, null_mut(), &mut handle) == 0 {
-        Err(Error::OpeningLibraryError(get_win_error()))
-    } else {
-        Ok(handle)
+    unsafe {
+        let mut handle: Handle = null_mut();
+        if GetModuleHandleExW(0, null_mut(), &mut handle) == 0 {
+            Err(Error::OpeningLibraryError(get_win_error()))
+        } else {
+            Ok(handle)
+        }
     }
 }
 
 #[inline]
 pub unsafe fn open_lib(name: &OsStr, _flags: Option<i32>) -> Result<Handle, Error> {
-    let wide_name: Vec<u16> = name.encode_wide().chain(Some(0)).collect();
-    let _guard = match ErrorModeGuard::new() {
-        Ok(val) => val,
-        Err(err) => return Err(Error::OpeningLibraryError(err)),
-    };
-    let handle = LoadLibraryW(wide_name.as_ptr());
-    if handle.is_null() {
-        Err(Error::OpeningLibraryError(get_win_error()))
-    } else {
-        Ok(handle)
+    unsafe {
+        let wide_name: Vec<u16> = name.encode_wide().chain(Some(0)).collect();
+        let _guard = match ErrorModeGuard::new() {
+            Ok(val) => val,
+            Err(err) => return Err(Error::OpeningLibraryError(err)),
+        };
+        let handle = LoadLibraryW(wide_name.as_ptr());
+        if handle.is_null() {
+            Err(Error::OpeningLibraryError(get_win_error()))
+        } else {
+            Ok(handle)
+        }
     }
 }
 
 #[inline]
 pub unsafe fn addr_info_init() {
-    // calls to Sym* functions are not thread safe.
-    SYM_MUTEX.get_or_init(|| {
-        let process_handle = GetCurrentProcess();
-        let _result = SymInitializeW(process_handle, null_mut(), TRUE);
-        Mutex::new(())
-    });
+    unsafe {
+        // calls to Sym* functions are not thread safe.
+        SYM_MUTEX.get_or_init(|| {
+            let process_handle = GetCurrentProcess();
+            let _result = SymInitializeW(process_handle, null_mut(), TRUE);
+            Mutex::new(())
+        });
+    }
 }
 
 #[inline]
 pub unsafe fn addr_info_obtain(addr: *const ()) -> Result<AddressInfo, Error> {
-    let process_handle = GetCurrentProcess();
+    unsafe {
+        let process_handle = GetCurrentProcess();
 
-    let mut buffer = utils::maybe_uninit_uninit_array::<WCHAR, { PATH_MAX as usize }>();
-    let mut symbol_buffer = utils::maybe_uninit_uninit_array::<
-        u8,
-        { size_of::<SYMBOL_INFOW>() + MAX_SYMBOL_LEN * size_of::<WCHAR>() },
-    >();
-    let (module_base, path_len, symbol_info, result) = {
-        // calls to Sym* functions are not thread safe.
-        let mut _lock = SYM_MUTEX.get().unwrap().lock().expect("Mutex got poisoned");
-        let module_base = SymGetModuleBase64(process_handle, addr as u64);
+        let mut buffer = utils::maybe_uninit_uninit_array::<WCHAR, { PATH_MAX as usize }>();
+        let mut symbol_buffer = utils::maybe_uninit_uninit_array::<
+            u8,
+            { size_of::<SYMBOL_INFOW>() + MAX_SYMBOL_LEN * size_of::<WCHAR>() },
+        >();
+        let (module_base, path_len, symbol_info, result) = {
+            // calls to Sym* functions are not thread safe.
+            let mut _lock = SYM_MUTEX.get().unwrap().lock().expect("Mutex got poisoned");
+            let module_base = SymGetModuleBase64(process_handle, addr as u64);
 
-        if module_base == 0 {
-            return Err(Error::AddrNotMatchingDll(get_win_error()));
-        }
+            if module_base == 0 {
+                return Err(Error::AddrNotMatchingDll(get_win_error()));
+            }
 
-        let path_len = GetModuleFileNameW(module_base as HMODULE, buffer[0].as_mut_ptr(), PATH_MAX);
-        if path_len == 0 {
-            return Err(Error::AddrNotMatchingDll(get_win_error()));
-        }
-        let symbol_info: *mut SYMBOL_INFOW = symbol_buffer.as_mut_ptr() as *mut SYMBOL_INFOW;
+            let path_len =
+                GetModuleFileNameW(module_base as HMODULE, buffer[0].as_mut_ptr(), PATH_MAX);
+            if path_len == 0 {
+                return Err(Error::AddrNotMatchingDll(get_win_error()));
+            }
+            let symbol_info: *mut SYMBOL_INFOW = symbol_buffer.as_mut_ptr() as *mut SYMBOL_INFOW;
 
-        (*symbol_info).SizeOfStruct = size_of::<SYMBOL_INFOW>() as DWORD;
-        (*symbol_info).MaxNameLen = MAX_SYMBOL_LEN as DWORD;
-        let mut displacement: DWORD64 = 0;
-        let result = SymFromAddrW(
-            process_handle,
-            addr as DWORD64,
-            &mut displacement,
-            symbol_info,
-        );
-        (module_base, path_len, symbol_info, result)
-    };
-
-    let os = if result == TRUE {
-        let name_len = (*symbol_info).NameLen as usize;
-        let name_slice = slice::from_raw_parts((*symbol_info).Name.as_ptr(), name_len);
-        let name = OsString::from_wide(name_slice)
-            .to_string_lossy()
-            .into_owned();
-        //winapi doesn't have implementation of the SymSetOptions() for now
-        //we need to manually strip off the namespace of the symbol.
-        let name = match name.find("::") {
-            None => name,
-            Some(idx) => name[idx + 2..].to_string(),
+            (*symbol_info).SizeOfStruct = size_of::<SYMBOL_INFOW>() as DWORD;
+            (*symbol_info).MaxNameLen = MAX_SYMBOL_LEN as DWORD;
+            let mut displacement: DWORD64 = 0;
+            let result = SymFromAddrW(
+                process_handle,
+                addr as DWORD64,
+                &mut displacement,
+                symbol_info,
+            );
+            (module_base, path_len, symbol_info, result)
         };
-        Some(OverlappingSymbol {
-            name,
-            addr, // on Windows there is no overlappping, just a straight match
+
+        let os = if result == TRUE {
+            let name_len = (*symbol_info).NameLen as usize;
+            let name_slice = slice::from_raw_parts((*symbol_info).Name.as_ptr(), name_len);
+            let name = OsString::from_wide(name_slice)
+                .to_string_lossy()
+                .into_owned();
+            //winapi doesn't have implementation of the SymSetOptions() for now
+            //we need to manually strip off the namespace of the symbol.
+            let name = match name.find("::") {
+                None => name,
+                Some(idx) => name[idx + 2..].to_string(),
+            };
+            Some(OverlappingSymbol {
+                name,
+                addr, // on Windows there is no overlappping, just a straight match
+            })
+        } else {
+            None
+        };
+        Ok({
+            AddressInfo {
+                dll_path: OsString::from_wide(utils::maybe_uninit_slice_assume_init_ref(
+                    &buffer[0..(path_len as usize)],
+                ))
+                .to_string_lossy()
+                .into_owned(),
+                dll_base_addr: module_base as *const (),
+                overlapping_symbol: os,
+            }
         })
-    } else {
-        None
-    };
-    Ok({
-        AddressInfo {
-            dll_path: OsString::from_wide(utils::maybe_uninit_slice_assume_init_ref(
-                &buffer[0..(path_len as usize)],
-            ))
-            .to_string_lossy()
-            .into_owned(),
-            dll_base_addr: module_base as *const (),
-            overlapping_symbol: os,
-        }
-    })
+    }
 }
 
 #[inline]

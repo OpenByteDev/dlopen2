@@ -73,13 +73,13 @@ impl Library {
     /// However the `reference()` and `reference_mut()` methods return a native reference and they
     /// are more programmer friendly when you try accessing statically allocated data in
     /// the library.
-    pub unsafe fn symbol<T>(&self, name: &str) -> Result<Symbol<T>, Error> {
-        Ok(Symbol::new(self.lib.symbol(name)?))
+    pub unsafe fn symbol<T>(&self, name: &str) -> Result<Symbol<'_, T>, Error> {
+        Ok(Symbol::new(unsafe { self.lib.symbol(name) }?))
     }
 
     /// Equivalent of the `symbol()` method but takes `CStr` as a argument.
-    pub unsafe fn symbol_cstr<T>(&self, name: &CStr) -> Result<Symbol<T>, Error> {
-        Ok(Symbol::new(self.lib.symbol_cstr(name)?))
+    pub unsafe fn symbol_cstr<T>(&self, name: &CStr) -> Result<Symbol<'_, T>, Error> {
+        unsafe { Ok(Symbol::new(self.lib.symbol_cstr(name)?)) }
     }
 
     /// Obtain a const pointer from library.
@@ -87,21 +87,25 @@ impl Library {
     /// **Note:** This method is only recommended for data
     /// that can't be accessed as a reference and that can have a null pointer value
     /// (so not in 99% of cases).
-    pub unsafe fn ptr_or_null<T>(&self, name: &str) -> Result<PtrOrNull<T>, Error> {
-        let cname = CString::new(name)?;
-        self.ptr_or_null_cstr(cname.as_ref())
+    pub unsafe fn ptr_or_null<T>(&self, name: &str) -> Result<PtrOrNull<'_, T>, Error> {
+        unsafe {
+            let cname = CString::new(name)?;
+            self.ptr_or_null_cstr(cname.as_ref())
+        }
     }
 
     /// Equivalent of the `pointer()` method but takes `CStr` as a argument.
-    pub unsafe fn ptr_or_null_cstr<T>(&self, name: &CStr) -> Result<PtrOrNull<T>, Error> {
-        let raw_ptr = match self.lib.symbol_cstr(name) {
-            Ok(val) => val,
-            Err(err) => match err {
-                Error::NullSymbol => null(),
-                _ => return Err(err),
-            },
-        };
-        Ok(PtrOrNull::new(raw_ptr))
+    pub unsafe fn ptr_or_null_cstr<T>(&self, name: &CStr) -> Result<PtrOrNull<'_, T>, Error> {
+        unsafe {
+            let raw_ptr = match self.lib.symbol_cstr(name) {
+                Ok(val) => val,
+                Err(err) => match err {
+                    Error::NullSymbol => null(),
+                    _ => return Err(err),
+                },
+            };
+            Ok(PtrOrNull::new(raw_ptr))
+        }
     }
 
     /// Obtain a mutable pointer from library.
@@ -109,44 +113,48 @@ impl Library {
     /// **Note:** This method is only recommended for data
     /// that can't be accessed as a reference and that can have a null pointer value
     /// (so not in 99% of cases).
-    pub unsafe fn ptr_or_null_mut<T>(&mut self, name: &str) -> Result<PtrOrNullMut<T>, Error> {
-        let cname = CString::new(name)?;
-        self.ptr_or_null_mut_cstr(cname.as_ref())
+    pub unsafe fn ptr_or_null_mut<T>(&mut self, name: &str) -> Result<PtrOrNullMut<'_, T>, Error> {
+        unsafe {
+            let cname = CString::new(name)?;
+            self.ptr_or_null_mut_cstr(cname.as_ref())
+        }
     }
 
     /// Equivalent of the `pointer_mut()` method but takes `CStr` as a argument.
     pub unsafe fn ptr_or_null_mut_cstr<T>(
         &mut self,
         name: &CStr,
-    ) -> Result<PtrOrNullMut<T>, Error> {
-        let raw_ptr = match self.lib.symbol_cstr(name) {
-            Ok(val) => val,
-            Err(err) => match err {
-                Error::NullSymbol => null_mut(),
-                _ => return Err(err),
-            },
-        };
-        Ok(PtrOrNullMut::new(raw_ptr))
+    ) -> Result<PtrOrNullMut<'_, T>, Error> {
+        unsafe {
+            let raw_ptr = match self.lib.symbol_cstr(name) {
+                Ok(val) => val,
+                Err(err) => match err {
+                    Error::NullSymbol => null_mut(),
+                    _ => return Err(err),
+                },
+            };
+            Ok(PtrOrNullMut::new(raw_ptr))
+        }
     }
 
     /// Obtain const reference to statically allocated data in the library.
     pub unsafe fn reference<T>(&self, name: &str) -> Result<&T, Error> {
-        self.lib.symbol(name)
+        unsafe { self.lib.symbol(name) }
     }
 
     /// Equivalent of the `reference()` method but takes `CStr` as a argument.
     pub unsafe fn reference_cstr<T>(&self, name: &CStr) -> Result<&T, Error> {
-        self.lib.symbol_cstr(name)
+        unsafe { self.lib.symbol_cstr(name) }
     }
 
     /// Obtain mutable reference to statically allocated data in the library.
     pub unsafe fn reference_mut<T>(&mut self, name: &str) -> Result<&mut T, Error> {
-        self.lib.symbol(name)
+        unsafe { self.lib.symbol(name) }
     }
 
     /// Equivalent of the `reference_mut()` method but takes `CStr` as a argument.
     pub unsafe fn reference_mut_cstr<T>(&mut self, name: &CStr) -> Result<&mut T, Error> {
-        self.lib.symbol_cstr(name)
+        unsafe { self.lib.symbol_cstr(name) }
     }
 
     /**
@@ -155,7 +163,7 @@ impl Library {
     This is `HMODULE` on Windows and `*mut c_void` on Unix systems. Don't use unless absolutely necessary.
     */
     pub unsafe fn into_raw(&self) -> raw::Handle {
-        self.lib.into_raw()
+        unsafe { self.lib.into_raw() }
     }
 }
 

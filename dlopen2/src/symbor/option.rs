@@ -6,9 +6,11 @@ where
     T: FromRawResult,
 {
     unsafe fn from_raw_result(raw_result: RawResult) -> Result<Option<T>, Error> {
-        match T::from_raw_result(raw_result) {
-            Ok(val) => Ok(Some(val)),
-            Err(_) => Ok(None),
+        unsafe {
+            match T::from_raw_result(raw_result) {
+                Ok(val) => Ok(Some(val)),
+                Err(_) => Ok(None),
+            }
         }
     }
 }
