@@ -10,7 +10,7 @@ keywords = [
     "dlopen", "dll", "so", "dylib", "shared"]
 license = "MIT"
 repository = "https://github.com/OpenByteDev/dlopen2"
-edition = "2021"
+edition = "2024"
 readme = "../README.md"
 
 [dependencies]

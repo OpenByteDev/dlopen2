@@ -21,10 +21,10 @@ pub fn wrapper_api(input: TokenStream) -> TokenStream {
     let ast = parse_macro_input!(input as DeriveInput);
 
     // Build the impl
-    let gen = impl_wrapper_api(&ast);
+    let wrapper = impl_wrapper_api(&ast);
 
     // Return the generated impl
-    TokenStream::from(gen)
+    TokenStream::from(wrapper)
 }
 
 #[proc_macro_derive(WrapperMultiApi)]
@@ -33,10 +33,10 @@ pub fn wrapper_multi_api(input: TokenStream) -> TokenStream {
     let ast = parse_macro_input!(input as DeriveInput);
 
     // Build the impl
-    let gen = impl_wrapper_multi_api(&ast);
+    let wrapper = impl_wrapper_multi_api(&ast);
 
     // Return the generated impl
-    TokenStream::from(gen)
+    TokenStream::from(wrapper)
 }
 
 #[proc_macro_derive(SymBorApi, attributes(dlopen2_name))]
@@ -45,8 +45,8 @@ pub fn library_api(input: TokenStream) -> TokenStream {
     let ast = parse_macro_input!(input as DeriveInput);
 
     // Build the impl
-    let gen = impl_library_api(&ast);
+    let library = impl_library_api(&ast);
 
     // Return the generated impl
-    TokenStream::from(gen)
+    TokenStream::from(library)
 }

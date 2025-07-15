@@ -6,7 +6,7 @@ authors = ["Szymon Wieloch <szymon.wieloch@gmail.com>",
 description = "Derive macros for the dlopen2 crate."
 license = "MIT"
 repository = "https://github.com/OpenByteDev/dlopen2"
-edition = "2021"
+edition = "2024"
 
 [lib]
 proc-macro = true

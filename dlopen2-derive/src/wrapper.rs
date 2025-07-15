@@ -55,15 +55,15 @@ fn field_to_tokens(field: &Field) -> proc_macro2::TokenStream {
             }
             normal_field(field)
         }
-        Type::Ptr(ref ptr) => {
+        Type::Ptr(ptr) => {
             if allow_null {
                 allow_null_field(field, ptr)
             } else {
                 normal_field(field)
             }
         }
-        Type::Path(ref path) => {
-            let path = &path.path;
+        Type::Path(rpath) => {
+            let path = &rpath.path;
             let segments_string: Vec<String> = path
                 .segments
                 .iter()
@@ -81,7 +81,7 @@ fn field_to_tokens(field: &Field) -> proc_macro2::TokenStream {
             }
         }
         _ => {
-            panic!("Only bare functions, references and pointers are allowed in structures implementing WrapperApi trait")
+            panic!("Only bare functions, references and pointers are allowed in structures implementing WrapperApi trait not {:?}", field.ty);
         }
     }
 }
@@ -138,7 +138,7 @@ fn optional_field(field: &Field) -> proc_macro2::TokenStream {
 
 fn skip_groups(ty: &Type) -> &Type {
     match ty {
-        Type::Group(ref group) => skip_groups(&group.elem),
+        Type::Group(group) => skip_groups(&group.elem),
         _ => ty,
     }
 }
@@ -151,7 +151,7 @@ fn field_to_wrapper(field: &Field) -> Option<proc_macro2::TokenStream> {
     let attrs = get_non_marker_attrs(field);
 
     match skip_groups(&field.ty) {
-        Type::BareFn(ref fun) => {
+        Type::BareFn(fun) => {
             if fun.variadic.is_some() {
                 None
             } else {
@@ -173,7 +173,7 @@ fn field_to_wrapper(field: &Field) -> Option<proc_macro2::TokenStream> {
                 })
             }
         }
-        Type::Reference(ref ref_ty) => {
+        Type::Reference(ref_ty) => {
             let ty = &ref_ty.elem;
             let mut_acc = match ref_ty.mutability {
                 Some(_token) => {
@@ -203,7 +203,7 @@ fn field_to_wrapper(field: &Field) -> Option<proc_macro2::TokenStream> {
         }
         Type::Ptr(_) => None,
         // For `field: Option<fn(...) -> ...>`
-        Type::Path(ref path) => {
+        Type::Path(path) => {
             let path = &path.path;
             let segments = &path.segments;
             let segment = segments
