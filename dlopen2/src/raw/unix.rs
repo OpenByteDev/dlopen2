@@ -32,56 +32,62 @@ pub type Handle = *mut c_void;
 
 #[inline]
 pub unsafe fn get_sym(handle: Handle, name: &CStr) -> Result<*mut (), Error> {
-    let _lock = lock_dlerror_mutex();
-    //clear the dlerror in order to be able to distinguish between NULL pointer and error
-    let _ = dlerror();
-    let symbol = dlsym(handle, name.as_ptr());
-    //This can be either error or just the library has a NULL pointer - legal
-    if symbol.is_null() {
-        let msg = dlerror();
-        if !msg.is_null() {
-            return Err(Error::SymbolGettingError(IoError::other(
-                CStr::from_ptr(msg).to_string_lossy().to_string(),
-            )));
+    unsafe {
+        let _lock = lock_dlerror_mutex();
+        //clear the dlerror in order to be able to distinguish between NULL pointer and error
+        let _ = dlerror();
+        let symbol = dlsym(handle, name.as_ptr());
+        //This can be either error or just the library has a NULL pointer - legal
+        if symbol.is_null() {
+            let msg = dlerror();
+            if !msg.is_null() {
+                return Err(Error::SymbolGettingError(IoError::other(
+                    CStr::from_ptr(msg).to_string_lossy().to_string(),
+                )));
+            }
         }
+        Ok(symbol as *mut ())
     }
-    Ok(symbol as *mut ())
 }
 
 #[inline]
 pub unsafe fn open_self() -> Result<Handle, Error> {
-    let _lock = lock_dlerror_mutex();
-    let handle = dlopen(null(), DEFAULT_FLAGS);
-    if handle.is_null() {
-        Err(Error::OpeningLibraryError(IoError::other(
-            CStr::from_ptr(dlerror()).to_string_lossy().to_string(),
-        )))
-    } else {
-        Ok(handle)
+    unsafe {
+        let _lock = lock_dlerror_mutex();
+        let handle = dlopen(null(), DEFAULT_FLAGS);
+        if handle.is_null() {
+            Err(Error::OpeningLibraryError(IoError::other(
+                CStr::from_ptr(dlerror()).to_string_lossy().to_string(),
+            )))
+        } else {
+            Ok(handle)
+        }
     }
 }
 
 #[inline]
 pub unsafe fn open_lib(name: &OsStr, flags: Option<i32>) -> Result<Handle, Error> {
-    let mut v: Vec<u8> = Vec::new();
-    //as_bytes i a unix-specific extension
-    let cstr = if !name.is_empty() && name.as_bytes()[name.len() - 1] == 0 {
-        //don't need to convert
-        CStr::from_bytes_with_nul_unchecked(name.as_bytes())
-    } else {
-        //need to convert
-        v.extend_from_slice(name.as_bytes());
-        v.push(0);
-        CStr::from_bytes_with_nul_unchecked(v.as_slice())
-    };
-    let _lock = lock_dlerror_mutex();
-    let handle = dlopen(cstr.as_ptr(), flags.unwrap_or(DEFAULT_FLAGS));
-    if handle.is_null() {
-        Err(Error::OpeningLibraryError(IoError::other(
-            CStr::from_ptr(dlerror()).to_string_lossy().to_string(),
-        )))
-    } else {
-        Ok(handle)
+    unsafe {
+        let mut v: Vec<u8> = Vec::new();
+        //as_bytes i a unix-specific extension
+        let cstr = if !name.is_empty() && name.as_bytes()[name.len() - 1] == 0 {
+            //don't need to convert
+            CStr::from_bytes_with_nul_unchecked(name.as_bytes())
+        } else {
+            //need to convert
+            v.extend_from_slice(name.as_bytes());
+            v.push(0);
+            CStr::from_bytes_with_nul_unchecked(v.as_slice())
+        };
+        let _lock = lock_dlerror_mutex();
+        let handle = dlopen(cstr.as_ptr(), flags.unwrap_or(DEFAULT_FLAGS));
+        if handle.is_null() {
+            Err(Error::OpeningLibraryError(IoError::other(
+                CStr::from_ptr(dlerror()).to_string_lossy().to_string(),
+            )))
+        } else {
+            Ok(handle)
+        }
     }
 }
 

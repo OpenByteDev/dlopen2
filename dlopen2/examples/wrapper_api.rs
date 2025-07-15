@@ -58,5 +58,5 @@ fn main() {
 
     println!("Rust says: {}", *cont.rust_str());
     let converted = cont.c_const_str().to_str().unwrap();
-    println!("And now C says: {}", converted);
+    println!("And now C says: {converted}");
 }

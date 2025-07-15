@@ -11,10 +11,7 @@ struct Manifest {
 pub fn example_lib_path() -> PathBuf {
     // Rust when building dependencies adds some weird numbers to file names
     // find the file using this pattern:
-    let file_pattern = format!(
-        r"{}example.*\.{}",
-        PLATFORM_FILE_PREFIX, PLATFORM_FILE_EXTENSION
-    );
+    let file_pattern = format!(r"{PLATFORM_FILE_PREFIX}example.*\.{PLATFORM_FILE_EXTENSION}");
     let file_regex = regex::Regex::new(file_pattern.as_ref()).unwrap();
 
     // find the directory with dependencies - there shold be our

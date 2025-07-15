@@ -58,5 +58,5 @@ fn main() {
     let converted = unsafe { CStr::from_ptr(*api.c_const_char_ptr) }
         .to_str()
         .unwrap();
-    println!("And now C says: {}", converted);
+    println!("And now C says: {converted}");
 }

@@ -26,10 +26,10 @@ fn main() {
     println!("2+2={}", unsafe { c_fun_add_two(2) });
 
     let rust_i32: &i32 = unsafe { lib.symbol_cstr(c"rust_i32") }.unwrap();
-    println!("const rust i32 value: {}", rust_i32);
+    println!("const rust i32 value: {rust_i32}");
 
     let rust_i32_mut: &mut i32 = unsafe { lib.symbol_cstr(c"rust_i32_mut") }.unwrap();
-    println!("mutable rust i32 value: {}", rust_i32_mut);
+    println!("mutable rust i32 value: {rust_i32_mut}");
 
     *rust_i32_mut = 55;
     //for a change use pointer to obtain its value
@@ -38,7 +38,7 @@ fn main() {
 
     //the same with C
     let c_int: &c_int = unsafe { lib.symbol_cstr(c"c_int") }.unwrap();
-    println!("c_int={}", c_int);
+    println!("c_int={c_int}");
 
     //now static c struct
 
@@ -57,5 +57,5 @@ fn main() {
     let converted = unsafe { CStr::from_ptr(c_const_char_ptr) }
         .to_str()
         .unwrap();
-    println!("And now C says: {}", converted);
+    println!("And now C says: {converted}");
 }

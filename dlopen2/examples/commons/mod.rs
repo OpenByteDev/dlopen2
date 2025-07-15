@@ -14,10 +14,7 @@ struct Manifest {
 }
 
 pub fn example_lib_path() -> PathBuf {
-    let file_pattern = format!(
-        r"{}example.*\.{}",
-        PLATFORM_FILE_PREFIX, PLATFORM_FILE_EXTENSION
-    );
+    let file_pattern = format!(r"{PLATFORM_FILE_PREFIX}example.*\.{PLATFORM_FILE_EXTENSION}");
     let file_regex = regex::Regex::new(file_pattern.as_ref()).unwrap();
     //build path to the example library that covers most cases
     let output = std::process::Command::new(env!("CARGO"))
@@ -30,7 +27,7 @@ pub fn example_lib_path() -> PathBuf {
     lib_path.extend(["target", "debug", "deps"].iter());
     let entry = lib_path.read_dir().unwrap().find(|e| match *e {
         Ok(ref entry) => file_regex.is_match(entry.file_name().to_str().unwrap()),
-        Err(ref err) => panic!("Could not read cargo debug directory: {}", err),
+        Err(ref err) => panic!("Could not read cargo debug directory: {err}"),
     });
     lib_path.push(entry.unwrap().unwrap().file_name());
     println!("Library path: {}", lib_path.to_str().unwrap());
