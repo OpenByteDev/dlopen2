@@ -1,8 +1,8 @@
 use crate::raw;
 
 use super::super::Error;
-use super::api::SymBorApi;
 use super::Library;
+use super::api::SymBorApi;
 use std::ffi::OsStr;
 use std::mem::transmute;
 use std::ops::{Deref, DerefMut};

@@ -1,7 +1,7 @@
 use crate::raw;
 
-use super::super::raw::Library;
 use super::super::Error;
+use super::super::raw::Library;
 use super::api::WrapperApi;
 use std::ffi::OsStr;
 use std::ops::{Deref, DerefMut};

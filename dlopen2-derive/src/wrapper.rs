@@ -74,14 +74,19 @@ fn field_to_tokens(field: &Field) -> proc_macro2::TokenStream {
                 .map(|segment| segment.as_str())
                 .collect();
             match (path.leading_colon.is_some(), segments_str.as_slice()) {
-                (_, ["core" | "std", "option", "Option"]) | (false, ["option", "Option"]) | (false, ["Option"]) => {
-                    optional_field(field)
-                }
-                _ => panic!("Only bare functions, optional bare functions, references and pointers are allowed in structures implementing WrapperApi trait")
+                (_, ["core" | "std", "option", "Option"])
+                | (false, ["option", "Option"])
+                | (false, ["Option"]) => optional_field(field),
+                _ => panic!(
+                    "Only bare functions, optional bare functions, references and pointers are allowed in structures implementing WrapperApi trait"
+                ),
             }
         }
         _ => {
-            panic!("Only bare functions, references and pointers are allowed in structures implementing WrapperApi trait not {:?}", field.ty);
+            panic!(
+                "Only bare functions, references and pointers are allowed in structures implementing WrapperApi trait not {:?}",
+                field.ty
+            );
         }
     }
 }

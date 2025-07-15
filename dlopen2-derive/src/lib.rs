@@ -12,7 +12,7 @@ mod wrapper;
 use api::impl_library_api;
 use multi_api::impl_wrapper_multi_api;
 use proc_macro::TokenStream;
-use syn::{parse_macro_input, DeriveInput};
+use syn::{DeriveInput, parse_macro_input};
 use wrapper::impl_wrapper_api;
 
 #[proc_macro_derive(WrapperApi, attributes(dlopen2_name, dlopen2_allow_null))]

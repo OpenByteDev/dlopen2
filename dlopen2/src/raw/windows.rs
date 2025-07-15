@@ -9,12 +9,12 @@ use std::mem::size_of;
 use std::os::windows::ffi::{OsStrExt, OsStringExt};
 use std::ptr::null_mut;
 use std::slice;
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Mutex;
+use std::sync::atomic::{AtomicBool, Ordering};
 use winapi::shared::basetsd::DWORD64;
 use winapi::shared::minwindef::{DWORD, HMODULE, TRUE};
 use winapi::shared::winerror::ERROR_CALL_NOT_IMPLEMENTED;
-use winapi::um::dbghelp::{SymFromAddrW, SymGetModuleBase64, SymInitializeW, SYMBOL_INFOW};
+use winapi::um::dbghelp::{SYMBOL_INFOW, SymFromAddrW, SymGetModuleBase64, SymInitializeW};
 use winapi::um::errhandlingapi::{GetLastError, SetErrorMode, SetThreadErrorMode};
 use winapi::um::libloaderapi::{
     FreeLibrary, GetModuleFileNameW, GetModuleHandleExW, GetProcAddress, LoadLibraryW,

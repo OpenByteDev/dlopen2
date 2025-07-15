@@ -2,7 +2,7 @@
 
 use super::super::err::Error;
 use super::common::{AddressInfo, OverlappingSymbol};
-use libc::{dladdr, dlclose, dlerror, dlopen, dlsym, Dl_info, RTLD_LAZY, RTLD_LOCAL};
+use libc::{Dl_info, RTLD_LAZY, RTLD_LOCAL, dladdr, dlclose, dlerror, dlopen, dlsym};
 use std::ffi::{CStr, OsStr};
 use std::io::{Error as IoError, ErrorKind};
 use std::os::raw::{c_int, c_void};

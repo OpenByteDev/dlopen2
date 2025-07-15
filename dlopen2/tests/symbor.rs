@@ -3,7 +3,7 @@ use std::ffi::CStr;
 use std::os::raw::{c_char, c_int};
 
 mod commons;
-use commons::{example_lib_path, SomeData};
+use commons::{SomeData, example_lib_path};
 
 #[test]
 fn open_play_close_symbor() {
@@ -29,7 +29,7 @@ fn open_play_close_symbor() {
     let rust_i32_mut: &mut i32 = unsafe { lib.reference_mut_cstr(c"rust_i32_mut") }.unwrap();
     assert_eq!(42, *rust_i32_mut);
     *rust_i32_mut = 55; //should not crash
-                        //for a change use pointer to obtain its value
+    //for a change use pointer to obtain its value
     let rust_i32_ptr = unsafe { lib.symbol_cstr::<*const i32>(c"rust_i32_mut") }.unwrap();
     assert_eq!(55, unsafe { **rust_i32_ptr });
     //the same with C
