@@ -31,7 +31,7 @@ dangling symbols is prevented.
 use dlopen2::symbor::Library;
 
 fn main(){
-    let lib = Library::open("libexample.dylib").unwrap();
+    let mut lib = Library::open("libexample.dylib").unwrap();
     let fun = unsafe{lib.symbol::<unsafe extern "C" fn()>("function")}.unwrap();
     unsafe{fun()};
     let glob_val: &mut u32 = unsafe{lib.reference_mut("glob_val")}.unwrap();
