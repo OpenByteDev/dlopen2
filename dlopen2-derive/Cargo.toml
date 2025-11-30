@@ -1,6 +1,6 @@
 [package]
 name = "dlopen2_derive"
-version = "0.4.1"
+version = "0.4.2"
 authors = ["Szymon Wieloch <szymon.wieloch@gmail.com>",
            "OpenByte <development.openbyte@gmail.com>"]
 description = "Derive macros for the dlopen2 crate."
