@@ -21,7 +21,7 @@ impl<'lib, T> PtrOrNullMut<'lib, T> {
     }
 }
 
-impl<'lib, T> FromRawResult for PtrOrNullMut<'lib, T> {
+impl<T> FromRawResult for PtrOrNullMut<'_, T> {
     unsafe fn from_raw_result(raw_result: RawResult) -> Result<Self, Error> {
         match raw_result {
             Ok(ptr) => Ok(PtrOrNullMut {
@@ -33,12 +33,12 @@ impl<'lib, T> FromRawResult for PtrOrNullMut<'lib, T> {
     }
 }
 
-impl<'lib, T> Deref for PtrOrNullMut<'lib, T> {
+impl<T> Deref for PtrOrNullMut<'_, T> {
     type Target = *mut T;
     fn deref(&self) -> &*mut T {
         &self.pointer
     }
 }
 
-unsafe impl<'lib, T: Send> Send for PtrOrNullMut<'lib, T> {}
-unsafe impl<'lib, T: Sync> Sync for PtrOrNullMut<'lib, T> {}
+unsafe impl<T: Send> Send for PtrOrNullMut<'_, T> {}
+unsafe impl<T: Sync> Sync for PtrOrNullMut<'_, T> {}

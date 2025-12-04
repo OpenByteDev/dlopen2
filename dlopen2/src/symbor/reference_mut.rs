@@ -18,7 +18,7 @@ impl<'lib, T> RefMut<'lib, T> {
     }
 }
 
-impl<'lib, T> FromRawResult for RefMut<'lib, T> {
+impl<T> FromRawResult for RefMut<'_, T> {
     unsafe fn from_raw_result(raw_result: RawResult) -> Result<Self, Error> {
         unsafe {
             match raw_result {
@@ -37,19 +37,19 @@ impl<'lib, T> FromRawResult for RefMut<'lib, T> {
     }
 }
 
-impl<'lib, T> Deref for RefMut<'lib, T> {
+impl<T> Deref for RefMut<'_, T> {
     type Target = T;
     fn deref(&self) -> &T {
         self.reference
     }
 }
 
-impl<'lib, T> DerefMut for RefMut<'lib, T> {
+impl<T> DerefMut for RefMut<'_, T> {
     //type Target = T;
     fn deref_mut(&mut self) -> &mut T {
         self.reference
     }
 }
 
-unsafe impl<'lib, T: Send> Send for RefMut<'lib, T> {}
-unsafe impl<'lib, T: Sync> Sync for RefMut<'lib, T> {}
+unsafe impl<T: Send> Send for RefMut<'_, T> {}
+unsafe impl<T: Sync> Sync for RefMut<'_, T> {}

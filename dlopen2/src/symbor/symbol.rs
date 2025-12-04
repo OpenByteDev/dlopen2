@@ -24,7 +24,7 @@ impl<'lib, T> Symbol<'lib, T> {
     }
 }
 
-impl<'lib, T> FromRawResult for Symbol<'lib, T> {
+impl<T> FromRawResult for Symbol<'_, T> {
     unsafe fn from_raw_result(raw_result: RawResult) -> Result<Self, Error> {
         unsafe {
             match raw_result {
@@ -45,19 +45,19 @@ impl<'lib, T> FromRawResult for Symbol<'lib, T> {
     }
 }
 
-impl<'lib, T> Deref for Symbol<'lib, T> {
+impl<T> Deref for Symbol<'_, T> {
     type Target = T;
     fn deref(&self) -> &T {
         &self.symbol
     }
 }
 
-impl<'lib, T> DerefMut for Symbol<'lib, T> {
+impl<T> DerefMut for Symbol<'_, T> {
     //type Target =  T;
     fn deref_mut(&mut self) -> &mut T {
         &mut self.symbol
     }
 }
 
-unsafe impl<'lib, T: Send> Send for Symbol<'lib, T> {}
-unsafe impl<'lib, T: Sync> Sync for Symbol<'lib, T> {}
+unsafe impl<T: Send> Send for Symbol<'_, T> {}
+unsafe impl<T: Sync> Sync for Symbol<'_, T> {}

@@ -22,7 +22,7 @@ struct Api<'a> {
 }
 
 //those methods won't be generated
-impl<'a> Api<'a> {
+impl Api<'_> {
     fn rust_i32_ptr(&self) -> *const i32 {
         self.rust_i32_ptr
     }

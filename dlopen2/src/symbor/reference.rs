@@ -18,7 +18,7 @@ impl<'lib, T> Ref<'lib, T> {
     }
 }
 
-impl<'lib, T> FromRawResult for Ref<'lib, T> {
+impl<T> FromRawResult for Ref<'_, T> {
     unsafe fn from_raw_result(raw_result: RawResult) -> Result<Self, Error> {
         unsafe {
             match raw_result {
@@ -37,12 +37,12 @@ impl<'lib, T> FromRawResult for Ref<'lib, T> {
     }
 }
 
-impl<'lib, T> Deref for Ref<'lib, T> {
+impl<T> Deref for Ref<'_, T> {
     type Target = T;
     fn deref(&self) -> &T {
         self.reference
     }
 }
 
-unsafe impl<'lib, T: Send> Send for Ref<'lib, T> {}
-unsafe impl<'lib, T: Sync> Sync for Ref<'lib, T> {}
+unsafe impl<T: Send> Send for Ref<'_, T> {}
+unsafe impl<T: Sync> Sync for Ref<'_, T> {}

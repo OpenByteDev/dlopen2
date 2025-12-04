@@ -21,7 +21,7 @@ impl<'lib, T> PtrOrNull<'lib, T> {
     }
 }
 
-impl<'lib, T> FromRawResult for PtrOrNull<'lib, T> {
+impl<T> FromRawResult for PtrOrNull<'_, T> {
     unsafe fn from_raw_result(raw_result: RawResult) -> Result<Self, Error> {
         match raw_result {
             Ok(ptr) => Ok(PtrOrNull {
@@ -33,12 +33,12 @@ impl<'lib, T> FromRawResult for PtrOrNull<'lib, T> {
     }
 }
 
-impl<'lib, T> Deref for PtrOrNull<'lib, T> {
+impl<T> Deref for PtrOrNull<'_, T> {
     type Target = *const T;
     fn deref(&self) -> &*const T {
         &self.pointer
     }
 }
 
-unsafe impl<'lib, T: Send> Send for PtrOrNull<'lib, T> {}
-unsafe impl<'lib, T: Sync> Sync for PtrOrNull<'lib, T> {}
+unsafe impl<T: Send> Send for PtrOrNull<'_, T> {}
+unsafe impl<T: Sync> Sync for PtrOrNull<'_, T> {}
