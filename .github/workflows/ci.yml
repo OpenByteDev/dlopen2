@@ -111,3 +111,17 @@ jobs:
           components: rustfmt
     - name: Format check
       run: cargo fmt --all -- --check
+
+  msrv:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+          - os: windows-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install msrv
+        uses: actions-rs/toolchain@1.85.0
+      - name: Check MSRV
+        run: cargo check
