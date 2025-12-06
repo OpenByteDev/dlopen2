@@ -6,6 +6,7 @@ authors = ["Szymon Wieloch <szymon.wieloch@gmail.com>",
 description = "Example dynamic link library for executing tests of libraries that load and operate on dynamic link libraries"
 license = "MIT"
 edition = "2024"
+publish = false
 
 [lib]
 name = "example"
