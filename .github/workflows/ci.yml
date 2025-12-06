@@ -31,29 +31,36 @@ jobs:
           - target: x86_64-apple-darwin
             os: macos-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v6
     
     - name: Install latest ${{ matrix.toolchain }}
-      uses: actions-rs/toolchain@v1
+      uses: dtolnay/rust-toolchain@master
       with:
           target: ${{ matrix.target }}
           toolchain: ${{ matrix.toolchain }}
-          override: true
       
     - name: Build
-      uses: actions-rs/cargo@v1
-      with:
-        use-cross: false
-        command: build
-        args: --release --target ${{ matrix.target }}
+      run: cargo build --target ${{ matrix.target }}
       
     - name: Test
-      uses: actions-rs/cargo@v1
-      with:
-        use-cross: false
-        command: test
-        args: --target ${{ matrix.target }} --all-targets --no-fail-fast
-
+      run: cargo test --target ${{ matrix.target }} --all-targets --no-fail-fast
+      
+  hack:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+          - os: windows-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install latest nightly
+        uses: dtolnay/rust-toolchain@nightly
+      - name: cargo install cargo-hack
+        uses: taiki-e/install-action@cargo-hack
+      - name: cargo hack
+        run: cargo hack --feature-powerset check
+        
   documentation:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -62,15 +69,15 @@ jobs:
           - os: ubuntu-latest
           - os: windows-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v6
     - name: Install latest nightly
-      uses: actions-rs/toolchain@v1
-      with:
-          profile: minimal
-          toolchain: nightly
-          override: true
+      uses: dtolnay/rust-toolchain@nightly
     - name: Generate documentation
       run: cargo doc --all-features
+    - name: Install cargo-deadlinks
+      run: cargo install cargo-deadlinks
+    - name: Check dead links in doc
+      run: cargo deadlinks
 
   clippy:
     runs-on: ${{ matrix.os }}
@@ -80,19 +87,14 @@ jobs:
           - os: ubuntu-latest
           - os: windows-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v6
       - name: Install latest nightly
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@nightly
         with:
-            toolchain: nightly
-            components: clippy
-            override: true
+          components: clippy
             
       - name: Clippy check
-        uses: actions-rs/clippy-check@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          args: --all-features
+        run: cargo clippy --all-features
           
   fmt:
     runs-on: ${{ matrix.os }}
@@ -102,17 +104,10 @@ jobs:
           - os: ubuntu-latest
           - os: windows-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v6
     - name: Install latest nightly
-      uses: actions-rs/toolchain@v1
+      uses: dtolnay/rust-toolchain@nightly
       with:
-          profile: minimal
-          toolchain: nightly
-          override: true
           components: rustfmt
-          
     - name: Format check
-      uses: actions-rs/cargo@v1
-      with:
-          command: fmt
-          args: --all -- --check
+      run: cargo fmt --all -- --check
