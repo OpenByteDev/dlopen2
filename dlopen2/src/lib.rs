@@ -88,12 +88,12 @@ dlopen2 = "0.8"
 
 [Cargo documentation](https://docs.rs/dlopen2)
 
-[Examples](../examples)
+[Examples](https://github.com/OpenByteDev/dlopen2/tree/master/dlopen2/examples)
 
 [Changelog](https://github.com/OpenByteDev/dlopen2/releases)
 
 # License
-This code is licensed under the [MIT](../LICENSE) license.
+This code is licensed under the [MIT](https://github.com/OpenByteDev/dlopen2/blob/master/LICENSE) license.
 
 # Acknowledgement
 
