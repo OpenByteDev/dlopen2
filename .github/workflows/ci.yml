@@ -121,7 +121,7 @@ jobs:
           - os: windows-latest
     steps:
       - uses: actions/checkout@v6
-      - name: Install msrv
-        uses: actions-rs/toolchain@1.85.0
+      - name: Install 1.85
+        uses: dtolnay/rust-toolchain@1.85.0
       - name: Check MSRV
         run: cargo check
