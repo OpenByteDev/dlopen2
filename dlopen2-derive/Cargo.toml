@@ -8,6 +8,7 @@ description = "Derive macros for the dlopen2 crate."
 license = "MIT"
 repository = "https://github.com/OpenByteDev/dlopen2"
 edition = "2024"
+readme = "../README.md"
 
 [lib]
 proc-macro = true
