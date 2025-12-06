@@ -4,4 +4,4 @@ members = [
     "dlopen2-derive",
     "example-dylib",
 ]
-resolver = "2"
+resolver = "3"
