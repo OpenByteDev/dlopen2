@@ -2,7 +2,7 @@ use crate::utils;
 
 use super::super::err::Error;
 use super::common::{AddressInfo, OverlappingSymbol};
-use once_cell::sync::{Lazy, OnceCell};
+use once_cell::sync::OnceCell;
 use std::ffi::{CStr, OsStr, OsString};
 use std::io::Error as IoError;
 use std::mem::size_of;
@@ -11,32 +11,25 @@ use std::ptr::null_mut;
 use std::slice;
 use std::sync::Mutex;
 use std::sync::atomic::{AtomicBool, Ordering};
-use winapi::shared::basetsd::DWORD64;
-use winapi::shared::minwindef::{DWORD, HMODULE, TRUE};
-use winapi::shared::winerror::ERROR_CALL_NOT_IMPLEMENTED;
-use winapi::um::dbghelp::{SYMBOL_INFOW, SymFromAddrW, SymGetModuleBase64, SymInitializeW};
-use winapi::um::errhandlingapi::{GetLastError, SetErrorMode, SetThreadErrorMode};
-use winapi::um::libloaderapi::{
-    FreeLibrary, GetModuleFileNameW, GetModuleHandleExW, GetProcAddress, LoadLibraryW,
-};
-use winapi::um::processthreadsapi::GetCurrentProcess;
-use winapi::um::winnt::WCHAR;
+use windows_sys::Win32::Foundation::*;
+use windows_sys::Win32::System::Diagnostics::Debug::*;
+use windows_sys::Win32::System::LibraryLoader::*;
+use windows_sys::Win32::System::Threading::*;
+use windows_sys::core::*;
 
 static USE_ERRORMODE: AtomicBool = AtomicBool::new(false);
 
-const PATH_MAX: DWORD = 256;
+const PATH_MAX: u32 = 256;
 const MAX_SYMBOL_LEN: usize = 256;
 
 struct SetErrorModeData {
     pub count: u32,
-    pub previous: DWORD,
+    pub previous: THREAD_ERROR_MODE,
 }
 
-static SET_ERR_MODE_DATA: Lazy<Mutex<SetErrorModeData>> = Lazy::new(|| {
-    Mutex::new(SetErrorModeData {
-        count: 0,
-        previous: 0,
-    })
+static SET_ERR_MODE_DATA: Mutex<SetErrorModeData> = Mutex::new(SetErrorModeData {
+    count: 0,
+    previous: 0,
 });
 static SYM_MUTEX: OnceCell<Mutex<()>> = OnceCell::new();
 
@@ -55,10 +48,10 @@ process.
 https://msdn.microsoft.com/pl-pl/library/windows/desktop/dd553630(v=vs.85).aspx
 */
 
-const ERROR_MODE: DWORD = 1; // app handles everything
+const ERROR_MODE: THREAD_ERROR_MODE = 1; // app handles everything
 
 enum ErrorModeGuard {
-    ThreadPreviousValue(DWORD),
+    ThreadPreviousValue(THREAD_ERROR_MODE),
     DoNothing,
     Process,
 }
@@ -66,7 +59,7 @@ enum ErrorModeGuard {
 impl ErrorModeGuard {
     fn new() -> Result<ErrorModeGuard, IoError> {
         if !USE_ERRORMODE.load(Ordering::Acquire) {
-            let mut previous: DWORD = 0;
+            let mut previous: THREAD_ERROR_MODE = 0;
             if unsafe { SetThreadErrorMode(ERROR_MODE, &mut previous) } == 0 {
                 //error. On some systems SetThreadErrorMode may not be implemented
                 let error = unsafe { GetLastError() };
@@ -135,11 +128,10 @@ unsafe fn get_win_error() -> IoError {
 #[inline]
 pub unsafe fn get_sym(handle: Handle, name: &CStr) -> Result<*mut (), Error> {
     unsafe {
-        let symbol = GetProcAddress(handle, name.as_ptr());
-        if symbol.is_null() {
-            Err(Error::SymbolGettingError(get_win_error()))
-        } else {
-            Ok(symbol as *mut ())
+        let symbol = GetProcAddress(handle, name.as_ptr() as PCSTR);
+        match symbol {
+            Some(symbol) => Ok(symbol as *mut ()),
+            None => Err(Error::SymbolGettingError(get_win_error())),
         }
     }
 }
@@ -190,10 +182,10 @@ pub unsafe fn addr_info_obtain(addr: *const ()) -> Result<AddressInfo, Error> {
     unsafe {
         let process_handle = GetCurrentProcess();
 
-        let mut buffer = utils::maybe_uninit_uninit_array::<WCHAR, { PATH_MAX as usize }>();
+        let mut buffer = utils::maybe_uninit_uninit_array::<u16, { PATH_MAX as usize }>();
         let mut symbol_buffer = utils::maybe_uninit_uninit_array::<
             u8,
-            { size_of::<SYMBOL_INFOW>() + MAX_SYMBOL_LEN * size_of::<WCHAR>() },
+            { size_of::<SYMBOL_INFOW>() + MAX_SYMBOL_LEN * size_of::<u16>() },
         >();
         let (module_base, path_len, symbol_info, result) = {
             // calls to Sym* functions are not thread safe.
@@ -211,15 +203,10 @@ pub unsafe fn addr_info_obtain(addr: *const ()) -> Result<AddressInfo, Error> {
             }
             let symbol_info: *mut SYMBOL_INFOW = symbol_buffer.as_mut_ptr() as *mut SYMBOL_INFOW;
 
-            (*symbol_info).SizeOfStruct = size_of::<SYMBOL_INFOW>() as DWORD;
-            (*symbol_info).MaxNameLen = MAX_SYMBOL_LEN as DWORD;
-            let mut displacement: DWORD64 = 0;
-            let result = SymFromAddrW(
-                process_handle,
-                addr as DWORD64,
-                &mut displacement,
-                symbol_info,
-            );
+            (*symbol_info).SizeOfStruct = size_of::<SYMBOL_INFOW>() as u32;
+            (*symbol_info).MaxNameLen = MAX_SYMBOL_LEN as u32;
+            let mut displacement: u64 = 0;
+            let result = SymFromAddrW(process_handle, addr as u64, &mut displacement, symbol_info);
             (module_base, path_len, symbol_info, result)
         };
 
