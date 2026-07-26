@@ -15,7 +15,7 @@ edition = "2024"
 readme = "../README.md"
 
 [dependencies]
-dlopen2_derive = { path = "../dlopen2-derive", version = "0.4", optional = true }
+dlopen2_derive = { path = "../dlopen2-derive", version = "0.5", optional = true }
 
 [target.'cfg(windows)'.dependencies]
 windows-sys = { version = "0.61", features = ["Win32_Foundation", "Win32_System_Diagnostics_Debug", "Win32_System_LibraryLoader", "Win32_System_Threading"] }
