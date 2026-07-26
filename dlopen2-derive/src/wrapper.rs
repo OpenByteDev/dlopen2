@@ -1,6 +1,9 @@
 use super::common::{get_fields, get_non_marker_attrs, has_marker_attr, symbol_name};
 use quote::quote;
-use syn::{self, DeriveInput, Field, GenericArgument, NamedArg, PointerMutability, Type, TypePtr, Visibility};
+use syn::{
+    self, DeriveInput, Field, GenericArgument, NamedArg, PointerMutability, Type, TypePtr,
+    Visibility,
+};
 
 const ALLOW_NULL: &str = "dlopen2_allow_null";
 const TRAIT_NAME: &str = "WrapperApi";
