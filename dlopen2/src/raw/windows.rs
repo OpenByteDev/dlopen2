@@ -4,7 +4,6 @@ use super::{
     super::err::Error,
     common::{AddressInfo, OverlappingSymbol},
 };
-use once_cell::sync::OnceCell;
 use std::{
     ffi::{CStr, OsStr, OsString},
     io::Error as IoError,
@@ -13,7 +12,7 @@ use std::{
     ptr::null_mut,
     slice,
     sync::{
-        Mutex,
+        Mutex, OnceLock,
         atomic::{AtomicBool, Ordering},
     },
 };
@@ -46,7 +45,7 @@ static SET_ERR_MODE_DATA: Mutex<SetErrorModeData> = Mutex::new(SetErrorModeData 
     count: 0,
     previous: 0,
 });
-static SYM_MUTEX: OnceCell<Mutex<()>> = OnceCell::new();
+static SYM_MUTEX: OnceLock<Mutex<()>> = OnceLock::new();
 
 pub type Handle = HMODULE;
 
