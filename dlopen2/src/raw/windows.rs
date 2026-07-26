@@ -1,21 +1,36 @@
 use crate::utils;
 
-use super::super::err::Error;
-use super::common::{AddressInfo, OverlappingSymbol};
+use super::{
+    super::err::Error,
+    common::{AddressInfo, OverlappingSymbol},
+};
 use once_cell::sync::OnceCell;
-use std::ffi::{CStr, OsStr, OsString};
-use std::io::Error as IoError;
-use std::mem::size_of;
-use std::os::windows::ffi::{OsStrExt, OsStringExt};
-use std::ptr::null_mut;
-use std::slice;
-use std::sync::Mutex;
-use std::sync::atomic::{AtomicBool, Ordering};
-use windows_sys::Win32::Foundation::*;
-use windows_sys::Win32::System::Diagnostics::Debug::*;
-use windows_sys::Win32::System::LibraryLoader::*;
-use windows_sys::Win32::System::Threading::*;
-use windows_sys::core::*;
+use std::{
+    ffi::{CStr, OsStr, OsString},
+    io::Error as IoError,
+    mem::size_of,
+    os::windows::ffi::{OsStrExt, OsStringExt},
+    ptr::null_mut,
+    slice,
+    sync::{
+        Mutex,
+        atomic::{AtomicBool, Ordering},
+    },
+};
+use windows_sys::{
+    Win32::{
+        Foundation::{ERROR_CALL_NOT_IMPLEMENTED, FreeLibrary, GetLastError, HMODULE, TRUE},
+        System::{
+            Diagnostics::Debug::{
+                SYMBOL_INFOW, SetErrorMode, SetThreadErrorMode, SymFromAddrW, SymGetModuleBase64,
+                SymInitializeW, THREAD_ERROR_MODE,
+            },
+            LibraryLoader::{GetModuleFileNameW, GetModuleHandleExW, GetProcAddress, LoadLibraryW},
+            Threading::GetCurrentProcess,
+        },
+    },
+    core::PCSTR,
+};
 
 static USE_ERRORMODE: AtomicBool = AtomicBool::new(false);
 

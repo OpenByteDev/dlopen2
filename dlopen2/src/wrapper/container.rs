@@ -1,10 +1,13 @@
 use crate::raw;
 
-use super::super::Error;
-use super::super::raw::Library;
-use super::api::WrapperApi;
-use std::ffi::OsStr;
-use std::ops::{Deref, DerefMut};
+use super::{
+    super::{Error, raw::Library},
+    api::WrapperApi,
+};
+use std::{
+    ffi::OsStr,
+    ops::{Deref, DerefMut},
+};
 
 /**
 Container for both a dynamic load library handle and its API.

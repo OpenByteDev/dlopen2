@@ -1,5 +1,4 @@
-use super::super::err::Error;
-use super::ptr_or_null::PtrOrNull;
+use super::{super::err::Error, ptr_or_null::PtrOrNull};
 pub type RawResult<'a> = Result<PtrOrNull<'a, ()>, Error>;
 
 /// Allows conversion of raw symbol result into the given symbol.

@@ -1,7 +1,5 @@
 use dlopen2::utils::{PLATFORM_FILE_EXTENSION, PLATFORM_FILE_PREFIX};
-use std::env;
-use std::os::raw::c_int;
-use std::path::PathBuf;
+use std::{env, os::raw::c_int, path::PathBuf};
 
 //Rust when building dependencies adds some weird numbers to file names
 // find the file using this pattern:

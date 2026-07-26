@@ -76,10 +76,9 @@ mod container;
 mod multi_api;
 mod option;
 mod optional;
-pub use self::api::WrapperApi;
-pub use self::container::Container;
-pub use self::multi_api::WrapperMultiApi;
-pub use self::optional::OptionalContainer;
+pub use self::{
+    api::WrapperApi, container::Container, multi_api::WrapperMultiApi, optional::OptionalContainer,
+};
 
 #[cfg(feature = "derive")]
 pub use dlopen2_derive::{WrapperApi, WrapperMultiApi};

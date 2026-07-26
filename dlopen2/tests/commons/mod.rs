@@ -1,8 +1,10 @@
 use dlopen2::utils::{PLATFORM_FILE_EXTENSION, PLATFORM_FILE_PREFIX};
 use serde::Deserialize;
-use std::fs;
-use std::os::raw::c_int;
-use std::path::{Path, PathBuf};
+use std::{
+    fs,
+    os::raw::c_int,
+    path::{Path, PathBuf},
+};
 
 #[derive(Deserialize)]
 struct Manifest {

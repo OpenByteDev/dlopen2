@@ -1,13 +1,19 @@
 #![allow(clippy::let_unit_value)]
 
-use super::super::err::Error;
-use super::common::{AddressInfo, OverlappingSymbol};
+use super::{
+    super::err::Error,
+    common::{AddressInfo, OverlappingSymbol},
+};
 use libc::{Dl_info, RTLD_LAZY, RTLD_LOCAL, dladdr, dlclose, dlerror, dlopen, dlsym};
-use std::ffi::{CStr, OsStr};
-use std::io::{Error as IoError, ErrorKind};
-use std::os::raw::{c_int, c_void};
-use std::os::unix::ffi::OsStrExt;
-use std::ptr::{null, null_mut};
+use std::{
+    ffi::{CStr, OsStr},
+    io::{Error as IoError, ErrorKind},
+    os::{
+        raw::{c_int, c_void},
+        unix::ffi::OsStrExt,
+    },
+    ptr::{null, null_mut},
+};
 
 const DEFAULT_FLAGS: c_int = RTLD_LOCAL | RTLD_LAZY;
 

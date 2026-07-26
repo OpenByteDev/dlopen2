@@ -2,8 +2,10 @@ mod commons;
 
 use commons::{SomeData, example_lib_path};
 use dlopen2::raw::Library;
-use std::ffi::CStr;
-use std::os::raw::{c_char, c_int};
+use std::{
+    ffi::CStr,
+    os::raw::{c_char, c_int},
+};
 
 fn main() {
     let lib_path = example_lib_path();

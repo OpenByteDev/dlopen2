@@ -1,5 +1,7 @@
-use super::super::err::Error;
-use super::from_raw::{FromRawResult, RawResult};
+use super::{
+    super::err::Error,
+    from_raw::{FromRawResult, RawResult},
+};
 
 use std::ops::{Deref, DerefMut};
 

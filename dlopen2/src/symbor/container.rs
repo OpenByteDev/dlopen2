@@ -1,11 +1,11 @@
 use crate::raw;
 
-use super::super::Error;
-use super::Library;
-use super::api::SymBorApi;
-use std::ffi::OsStr;
-use std::mem::transmute;
-use std::ops::{Deref, DerefMut};
+use super::{super::Error, Library, api::SymBorApi};
+use std::{
+    ffi::OsStr,
+    mem::transmute,
+    ops::{Deref, DerefMut},
+};
 
 /**
 Container for both dynamic link library handle and its API.

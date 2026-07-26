@@ -1,6 +1,8 @@
 use dlopen2::symbor::Library;
-use std::ffi::CStr;
-use std::os::raw::{c_char, c_int};
+use std::{
+    ffi::CStr,
+    os::raw::{c_char, c_int},
+};
 
 mod commons;
 use commons::{SomeData, example_lib_path};

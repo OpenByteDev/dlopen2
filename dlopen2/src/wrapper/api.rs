@@ -1,5 +1,4 @@
-use super::super::err::Error;
-use super::super::raw::Library;
+use super::super::{err::Error, raw::Library};
 
 /**
 Trait for defining library API.

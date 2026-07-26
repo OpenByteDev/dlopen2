@@ -1,12 +1,13 @@
 use crate::raw;
 
-use super::super::raw::Library as RawLib;
-use super::ptr_or_null::PtrOrNull;
-use super::ptr_or_null_mut::PtrOrNullMut;
-use super::symbol::Symbol;
-use std::ffi::CStr;
-use std::ffi::{CString, OsStr};
-use std::ptr::{null, null_mut};
+use super::{
+    super::raw::Library as RawLib, ptr_or_null::PtrOrNull, ptr_or_null_mut::PtrOrNullMut,
+    symbol::Symbol,
+};
+use std::{
+    ffi::{CStr, CString, OsStr},
+    ptr::{null, null_mut},
+};
 
 use super::super::err::Error;
 

@@ -1,8 +1,10 @@
-use std::convert::From;
-use std::error::Error as ErrorTrait;
-use std::ffi::NulError;
-use std::fmt::{Display, Formatter, Result as FmtResult};
-use std::io::Error as IoError;
+use std::{
+    convert::From,
+    error::Error as ErrorTrait,
+    ffi::NulError,
+    fmt::{Display, Formatter, Result as FmtResult},
+    io::Error as IoError,
+};
 
 /// This is a library-specific error that is returned by all calls to all APIs.
 #[derive(Debug)]

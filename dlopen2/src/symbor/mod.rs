@@ -96,15 +96,11 @@ mod reference;
 mod reference_mut;
 mod symbol;
 
-pub use self::api::SymBorApi;
-pub use self::container::Container;
-pub use self::from_raw::FromRawResult;
-pub use self::library::Library;
-pub use self::ptr_or_null::PtrOrNull;
-pub use self::ptr_or_null_mut::PtrOrNullMut;
-pub use self::reference::Ref;
-pub use self::reference_mut::RefMut;
-pub use self::symbol::Symbol;
+pub use self::{
+    api::SymBorApi, container::Container, from_raw::FromRawResult, library::Library,
+    ptr_or_null::PtrOrNull, ptr_or_null_mut::PtrOrNullMut, reference::Ref, reference_mut::RefMut,
+    symbol::Symbol,
+};
 
 #[cfg(feature = "derive")]
 pub use dlopen2_derive::SymBorApi;

@@ -1,7 +1,8 @@
-use super::super::err::Error;
-use super::from_raw::{FromRawResult, RawResult};
-use std::marker::PhantomData;
-use std::ops::Deref;
+use super::{
+    super::err::Error,
+    from_raw::{FromRawResult, RawResult},
+};
+use std::{marker::PhantomData, ops::Deref};
 
 /// Safe wrapper around mutable pointer.
 ///
