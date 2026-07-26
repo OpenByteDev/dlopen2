@@ -1,6 +1,6 @@
 use super::common::{get_fields, get_non_marker_attrs, has_marker_attr, symbol_name};
 use quote::quote;
-use syn::{self, BareFnArg, DeriveInput, Field, GenericArgument, Type, TypePtr, Visibility};
+use syn::{self, DeriveInput, Field, GenericArgument, NamedArg, PointerMutability, Type, TypePtr, Visibility};
 
 const ALLOW_NULL: &str = "dlopen2_allow_null";
 const TRAIT_NAME: &str = "WrapperApi";
@@ -49,7 +49,7 @@ pub fn impl_wrapper_api(ast: &DeriveInput) -> proc_macro2::TokenStream {
 fn field_to_tokens(field: &Field) -> proc_macro2::TokenStream {
     let allow_null = has_marker_attr(field, ALLOW_NULL);
     match skip_groups(&field.ty) {
-        Type::BareFn(_) | Type::Reference(_) => {
+        Type::FnPtr(_) | Type::Reference(_) => {
             if allow_null {
                 panic!("Only pointers can have the '{ALLOW_NULL}' attribute assigned");
             }
@@ -105,8 +105,8 @@ fn allow_null_field(field: &Field, ptr: &TypePtr) -> proc_macro2::TokenStream {
     let field_name = &field.ident;
     let symbol_name = symbol_name(field);
     let null_fun = match ptr.mutability {
-        Some(_) => quote! {null},
-        None => quote! {null_mut},
+        PointerMutability::Const(_) => quote! {null},
+        PointerMutability::Mut(_) => quote! {null_mut},
     };
 
     quote! {
@@ -156,7 +156,7 @@ fn field_to_wrapper(field: &Field) -> Option<proc_macro2::TokenStream> {
     let attrs = get_non_marker_attrs(field);
 
     match skip_groups(&field.ty) {
-        Type::BareFn(fun) => {
+        Type::FnPtr(fun) => {
             if fun.variadic.is_some() {
                 None
             } else {
@@ -219,7 +219,7 @@ fn field_to_wrapper(field: &Field) -> Option<proc_macro2::TokenStream> {
             match args {
                 syn::PathArguments::AngleBracketed(args) => match args.args.first().unwrap() {
                     GenericArgument::Type(ty) => match skip_groups(ty) {
-                        Type::BareFn(fun) => {
+                        Type::FnPtr(fun) => {
                             if fun.variadic.is_some() {
                                 None
                             } else {
@@ -286,7 +286,7 @@ fn field_to_wrapper(field: &Field) -> Option<proc_macro2::TokenStream> {
     }
 }
 
-fn fun_arg_to_tokens(arg: &BareFnArg, function_name: &str) -> proc_macro2::TokenStream {
+fn fun_arg_to_tokens(arg: &NamedArg, function_name: &str) -> proc_macro2::TokenStream {
     let arg_name = match arg.name {
         Some(ref val) => &val.0,
         None => panic!("Function {function_name} has an unnamed argument."),
