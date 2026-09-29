@@ -20,13 +20,10 @@ const DEFAULT_FLAGS: c_int = RTLD_LOCAL | RTLD_LAZY;
 // calls to dlerror are not thread-safe on some platforms,
 // so we guard them with a mutex if required
 #[cfg(not(any(target_os = "linux", target_os = "macos")))]
-use {
-    once_cell::sync::Lazy,
-    std::sync::{LockResult, Mutex, MutexGuard},
-};
+use std::sync::{LazyLock, LockResult, Mutex, MutexGuard};
 #[cfg(not(any(target_os = "linux", target_os = "macos")))]
 fn lock_dlerror_mutex() -> LockResult<MutexGuard<'static, ()>> {
-    static DLERROR_MUTEX: Lazy<Mutex<()>> = Lazy::new(|| Mutex::new(()));
+    static DLERROR_MUTEX: LazyLock<Mutex<()>> = LazyLock::new(|| Mutex::new(()));
 
     DLERROR_MUTEX.lock()
 }
